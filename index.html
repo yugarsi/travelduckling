@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelDuckling</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .image-placeholder {
+            width: 300px;
+            height: 200px;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            overflow: hidden;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TravelDuckling</h1>
+        <div class="image-placeholder">
+            <!-- Using a standard SVG representing a car/ride share for reliability -->
+            <svg width="200" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 7H17.5L18.53 10H5.47L6.5 7ZM19 17H5V12H19V17Z" fill="#3498db"/>
+                <circle cx="7.5" cy="14.5" r="1.5" fill="#3498db"/>
+                <circle cx="16.5" cy="14.5" r="1.5" fill="#3498db"/>
+            </svg>
+        </div>
+        <p>Your journey, shared.</p>
+    </div>
+</body>
+</html>
