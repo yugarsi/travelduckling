@@ -1,115 +1,775 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TravelDuckling</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f4f8;
-            color: #333;
-            overflow: hidden;
-            position: relative;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TravelDuckling — Share the ride, split the cost</title>
+<meta name="description" content="TravelDuckling matches drivers with empty seats to travellers heading the same way. Find a ride or offer one in seconds.">
+<meta name="theme-color" content="#0b1220">
 
-        /* Background and Animation Container */
-        .background-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-image: url('image_background.webp');
-            background-size: cover;
-            background-position: center;
-        }
+<style>
+  /* ---------------------------------------------------------------------
+     Design tokens
+  --------------------------------------------------------------------- */
+  :root {
+    --duck-500: #ffcc33;
+    --duck-600: #f4b425;
+    --duck-700: #d99a10;
+    --beak-500: #ff8a3d;
 
-        .stars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: rotateStars 60s linear infinite;
-            pointer-events: none;
-        }
+    --ink-900: #0d1526;
+    --ink-700: #33415c;
+    --ink-500: #64748b;
+    --ink-300: #cbd5e1;
 
-        @keyframes rotateStars {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+    --surface: rgba(255, 255, 255, 0.94);
+    --surface-glass: rgba(255, 255, 255, 0.12);
+    --hairline: rgba(13, 21, 38, 0.10);
 
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 1;
-        }
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
 
-        h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
+    --shadow-md: 0 8px 24px rgba(8, 15, 30, 0.18);
+    --shadow-lg: 0 24px 60px rgba(8, 15, 30, 0.35);
 
-        .duckling-overlay {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 1.5rem;
-        }
+    --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
 
-        .duckling-overlay img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 50%;
-        }
+    --shell: min(1120px, 100% - 2.5rem);
+  }
 
-        /* Static Duck in bottom right */
-        .static-duck {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 100px;
-            z-index: 2;
-        }
+  /* ---------------------------------------------------------------------
+     Base
+  --------------------------------------------------------------------- */
+  *, *::before, *::after { box-sizing: border-box; }
 
-        .static-duck img {
-            width: 100%;
-            height: auto;
-        }
+  html, body { height: 100%; }
 
-        p {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-        }
-    </style>
+  body {
+    margin: 0;
+    font-family: var(--font-ui);
+    color: var(--ink-900);
+    background-color: #0b1220;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img, svg { display: block; max-width: 100%; }
+
+  button, input, select { font: inherit; color: inherit; }
+
+  :focus-visible {
+    outline: 3px solid var(--duck-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------------------------------------------------------------------
+     Backdrop: photo + rotating starfield + legibility scrim
+  --------------------------------------------------------------------- */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background-color: #0b1220;
+  }
+
+  /* Bleeds past the viewport so the slow zoom/pan never exposes an edge. */
+  .backdrop__photo {
+    position: absolute;
+    inset: -4%;
+    background: url("image_background.webp") center / cover no-repeat;
+    animation: drift 34s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* Sized in vmax and centred so the corners never sweep into view mid-spin. */
+  .backdrop__stars {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 220vmax;
+    height: 220vmax;
+    margin: -110vmax 0 0 -110vmax;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: spin 90s linear infinite;
+    will-change: transform;
+  }
+
+  .backdrop__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(11, 18, 32, 0.15), rgba(11, 18, 32, 0.72) 70%),
+      linear-gradient(180deg, rgba(11, 18, 32, 0.55), rgba(11, 18, 32, 0.30) 45%, rgba(11, 18, 32, 0.80));
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  @keyframes drift {
+    from { transform: scale(1) translate3d(0, 0, 0); }
+    to   { transform: scale(1.08) translate3d(-1.5%, 1%, 0); }
+  }
+
+  /* ---------------------------------------------------------------------
+     Page shell
+  --------------------------------------------------------------------- */
+  .page {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------------------------------------------------------------------
+     Header
+  --------------------------------------------------------------------- */
+  .site-header {
+    width: var(--shell);
+    margin-inline: auto;
+    padding-block: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .brand__mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(160deg, #fff6d6, var(--duck-500));
+    box-shadow: var(--shadow-md);
+  }
+
+  .brand__mark svg { width: 30px; height: 30px; }
+
+  .brand__name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .brand__name span { color: var(--duck-500); }
+
+  .site-nav {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .site-nav a {
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--radius-pill);
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.18s ease, color 0.18s ease;
+  }
+
+  .site-nav a:hover {
+    background: var(--surface-glass);
+    color: #fff;
+  }
+
+  .site-nav .nav-cta {
+    margin-left: 0.4rem;
+    background: var(--duck-500);
+    color: var(--ink-900);
+    font-weight: 650;
+  }
+
+  .site-nav .nav-cta:hover { background: #fff; }
+
+  @media (max-width: 720px) {
+    .site-nav a:not(.nav-cta) { display: none; }
+  }
+
+  /* ---------------------------------------------------------------------
+     Hero
+  --------------------------------------------------------------------- */
+  .hero {
+    flex: 1;
+    width: var(--shell);
+    margin-inline: auto;
+    padding-block: clamp(2rem, 7vh, 4.5rem) 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+  }
+
+  .hero__logo {
+    width: clamp(112px, 18vw, 148px);
+    height: clamp(112px, 18vw, 148px);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 32% 26%, #fffdf4, #ffe8a3 55%, var(--duck-600));
+    box-shadow: var(--shadow-lg), 0 0 0 10px rgba(255, 255, 255, 0.10);
+    animation: bob 5s ease-in-out infinite;
+  }
+
+  .hero__logo svg {
+    width: 66%;
+    height: 66%;
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-9px); }
+  }
+
+  .hero__title {
+    margin: 1.4rem 0 0;
+    font-size: clamp(2.1rem, 5.6vw, 3.4rem);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.06;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  .hero__title em {
+    font-style: normal;
+    color: var(--duck-500);
+  }
+
+  .hero__subtitle {
+    margin: 0.85rem 0 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 2.2vw, 1.13rem);
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  /* ---------------------------------------------------------------------
+     Search widget
+  --------------------------------------------------------------------- */
+  .search {
+    width: 100%;
+    max-width: 980px;
+    margin-top: clamp(1.75rem, 4vh, 2.5rem);
+    text-align: left;
+  }
+
+  .search__tabs {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.28rem;
+    border-radius: var(--radius-pill);
+    background: rgba(13, 21, 38, 0.45);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .search__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.15rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+  }
+
+  .search__tab:hover { color: #fff; }
+
+  .search__tab[aria-selected="true"] {
+    background: #fff;
+    color: var(--ink-900);
+    box-shadow: var(--shadow-md);
+  }
+
+  .search__tab svg { width: 17px; height: 17px; }
+
+  .search__panel {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(14px);
+    display: grid;
+    grid-template-columns: 1.25fr 1.25fr 1fr 0.8fr auto;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-md);
+    transition: background-color 0.18s ease;
+    min-width: 0;
+  }
+
+  .field:hover { background: rgba(13, 21, 38, 0.04); }
+
+  .field:focus-within { background: rgba(255, 204, 51, 0.14); }
+
+  .field + .field::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18%;
+    height: 64%;
+    border-left: 1px solid var(--hairline);
+  }
+
+  .field:hover::before,
+  .field:focus-within::before { border-color: transparent; }
+
+  /* Leave room for the swap control overlapping this field's leading edge. */
+  .field--to { padding-left: 1.85rem; }
+
+  .field__icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--ink-500);
+  }
+
+  .field__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .field__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-500);
+  }
+
+  .field__input {
+    width: 100%;
+    padding: 0.1rem 0;
+    border: 0;
+    background: transparent;
+    font-size: 0.98rem;
+    font-weight: 550;
+    color: var(--ink-900);
+    outline: none;
+    min-width: 0;
+  }
+
+  .field__input::placeholder { color: var(--ink-300); font-weight: 500; }
+
+  select.field__input { appearance: none; cursor: pointer; }
+
+  /* The native picker button duplicates our calendar glyph; stretch it invisibly
+     so the whole date field stays clickable instead. */
+  input[type="date"].field__input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Swap control straddling the From/To divider */
+  .swap {
+    position: absolute;
+    left: -17px;
+    top: 50%;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--hairline);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ink-700);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(8, 15, 30, 0.12);
+    transition: transform 0.25s ease, color 0.18s ease;
+  }
+
+  .swap:hover {
+    color: var(--duck-700);
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .swap svg { width: 16px; height: 16px; }
+
+  .search__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 1.7rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: var(--ink-900);
+    color: #fff;
+    font-size: 0.98rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background-color 0.18s ease, transform 0.12s ease;
+  }
+
+  .search__submit:hover { background: #1c2b4a; }
+
+  .search__submit:active { transform: scale(0.98); }
+
+  .search__submit svg { width: 18px; height: 18px; }
+
+  .search__status {
+    margin: 0.7rem 0 0;
+    min-height: 1.25rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  @media (max-width: 900px) {
+    .search__panel {
+      grid-template-columns: 1fr 1fr;
+    }
+    .field--from, .field--to { grid-column: 1 / -1; }
+    .field + .field::before {
+      left: 0.9rem;
+      right: 0.9rem;
+      top: 0;
+      height: 0;
+      border-left: 0;
+      border-top: 1px solid var(--hairline);
+    }
+    .swap {
+      left: auto;
+      right: 0.9rem;
+      top: -17px;
+      transform: none;
+    }
+    .swap:hover { transform: rotate(180deg); }
+    .field--to { padding-left: 0.9rem; padding-top: 1.15rem; }
+    .search__submit { grid-column: 1 / -1; padding: 0.9rem; }
+  }
+
+  @media (max-width: 520px) {
+    .search__panel { grid-template-columns: 1fr; }
+    .field--date, .field--seats { grid-column: 1 / -1; }
+  }
+
+  /* ---------------------------------------------------------------------
+     Trust strip
+  --------------------------------------------------------------------- */
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(1.25rem, 5vw, 3.25rem);
+    margin: clamp(2rem, 6vh, 3.25rem) 0 0;
+    padding: 0;
+    list-style: none;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .stats strong {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .stats span {
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------------------------------------------------------------------
+     Footer + floating duck
+  --------------------------------------------------------------------- */
+  .site-footer {
+    width: var(--shell);
+    margin-inline: auto;
+    padding-block: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    align-items: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .site-footer a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .site-footer a:hover { color: #fff; }
+
+  .site-footer__legal { margin-right: auto; }
+
+  .floating-duck {
+    position: fixed;
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(1rem, 3vw, 2rem);
+    width: clamp(64px, 9vw, 92px);
+    pointer-events: none;
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.35));
+    animation: paddle 6s ease-in-out infinite;
+  }
+
+  @keyframes paddle {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-10px) rotate(3deg); }
+  }
+
+  @media (max-width: 900px) {
+    .floating-duck { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 </head>
+
 <body>
-    <div class="background-container"></div>
-    <div class="stars"></div>
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__photo"></div>
+    <div class="backdrop__stars"></div>
+    <div class="backdrop__scrim"></div>
+  </div>
 
-    <div class="container">
-        <h1>TravelDuckling</h1>
-        <div class="duckling-overlay">
-            <img src="duckling.png" alt="Travel Duckling">
+  <!-- Duck logo, defined once and re-used via <use>. -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <symbol id="icon-duck" viewBox="2.5 5 120 120">
+      <path d="M26 72 6 56c-1 13 4 25 14 33z" fill="var(--duck-700)"/>
+      <ellipse cx="56" cy="82" rx="42" ry="27" fill="var(--duck-500)"/>
+      <path d="M34 76c14-9 32-8 45 3-4 15-19 23-34 18-8-3-13-12-11-21z" fill="var(--duck-600)"/>
+      <circle cx="80" cy="44" r="23" fill="var(--duck-500)"/>
+      <path d="M99 39c12-3 20 0 20 6s-8 10-20 7z" fill="var(--beak-500)"/>
+      <circle cx="85" cy="38" r="4" fill="#2b2112"/>
+      <circle cx="86.5" cy="36.5" r="1.4" fill="#fff"/>
+    </symbol>
+  </svg>
+
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand__mark"><svg aria-hidden="true"><use href="#icon-duck"/></svg></span>
+        <span class="brand__name">Travel<span>Duckling</span></span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main">
+        <a href="#how-it-works">How it works</a>
+        <a href="#offer">Offer a ride</a>
+        <a href="#help">Help</a>
+        <a class="nav-cta" href="#login">Log in</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="hero__logo">
+        <svg role="img" aria-label="TravelDuckling"><use href="#icon-duck"/></svg>
+      </div>
+
+      <h1 class="hero__title">Share the ride,<br><em>split the cost</em></h1>
+      <p class="hero__subtitle">
+        Thousands of drivers are already heading your way. Grab a seat, or fill yours
+        and make the trip pay for itself.
+      </p>
+
+      <section class="search" aria-label="Search for a ride">
+        <div class="search__tabs" role="tablist" aria-label="Search mode">
+          <button class="search__tab" id="tab-find" type="button" role="tab" aria-selected="true" aria-controls="search-form">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            Find a ride
+          </button>
+          <button class="search__tab" id="tab-offer" type="button" role="tab" aria-selected="false" aria-controls="search-form">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M5 16h14M6.5 16 8 9h8l1.5 7"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/>
+            </svg>
+            Offer a ride
+          </button>
         </div>
-        <p>Your journey, shared.</p>
-    </div>
 
-    <div class="static-duck">
-        <img src="duck.png" alt="Static Duck">
-    </div>
+        <form class="search__panel" id="search-form" role="tabpanel" aria-labelledby="tab-find" novalidate>
+          <div class="field field--from">
+            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>
+            </svg>
+            <span class="field__body">
+              <label class="field__label" for="from">Leaving from</label>
+              <input class="field__input" id="from" name="from" type="text" placeholder="Seattle, US" autocomplete="off">
+            </span>
+          </div>
+
+          <div class="field field--to">
+            <button class="swap" id="swap" type="button" title="Swap pickup and destination">
+              <span class="visually-hidden">Swap pickup and destination</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 4 4 7l3 3M4 7h13M17 20l3-3-3-3M20 17H7"/>
+              </svg>
+            </button>
+            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+            </svg>
+            <span class="field__body">
+              <label class="field__label" for="to">Going to</label>
+              <input class="field__input" id="to" name="to" type="text" placeholder="Santa Monica, US" autocomplete="off">
+            </span>
+          </div>
+
+          <div class="field field--date">
+            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/>
+            </svg>
+            <span class="field__body">
+              <label class="field__label" for="date">Date</label>
+              <input class="field__input" id="date" name="date" type="date">
+            </span>
+          </div>
+
+          <div class="field field--seats">
+            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/>
+            </svg>
+            <span class="field__body">
+              <label class="field__label" for="seats">Seats</label>
+              <select class="field__input" id="seats" name="seats">
+                <option value="1">1 passenger</option>
+                <option value="2">2 passengers</option>
+                <option value="3">3 passengers</option>
+                <option value="4">4 passengers</option>
+              </select>
+            </span>
+          </div>
+
+          <button class="search__submit" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <span id="submit-label">Search</span>
+          </button>
+        </form>
+
+        <p class="search__status" id="search-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <ul class="stats">
+        <li><strong>12k+</strong><span>rides shared</span></li>
+        <li><strong>180+</strong><span>cities covered</span></li>
+        <li><strong>4.9★</strong><span>average driver rating</span></li>
+      </ul>
+    </main>
+
+    <footer class="site-footer">
+      <span class="site-footer__legal">© <span id="year">2026</span> TravelDuckling</span>
+      <a href="#privacy">Privacy</a>
+      <a href="#terms">Terms</a>
+      <a href="#contact">Contact</a>
+    </footer>
+  </div>
+
+  <svg class="floating-duck" viewBox="0 0 120 120" aria-hidden="true"><use href="#icon-duck"/></svg>
+
+<script>
+  (function () {
+    "use strict";
+
+    var form    = document.getElementById("search-form");
+    var fromEl  = document.getElementById("from");
+    var toEl    = document.getElementById("to");
+    var dateEl  = document.getElementById("date");
+    var seatsEl = document.getElementById("seats");
+    var status  = document.getElementById("search-status");
+    var label   = document.getElementById("submit-label");
+    var tabs    = Array.prototype.slice.call(document.querySelectorAll(".search__tab"));
+
+    document.getElementById("year").textContent = String(new Date().getFullYear());
+
+    // Default the date picker to today and disallow trips in the past.
+    var today = new Date();
+    var iso = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
+    dateEl.value = iso;
+    dateEl.min = iso;
+
+    // Tabs switch the intent of the same form rather than swapping markup.
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t === tab)); });
+        var offering = tab.id === "tab-offer";
+        form.setAttribute("aria-labelledby", tab.id);
+        label.textContent = offering ? "Publish ride" : "Search";
+        seatsEl.previousElementSibling.textContent = offering ? "Seats free" : "Seats";
+        status.textContent = "";
+      });
+    });
+
+    document.getElementById("swap").addEventListener("click", function () {
+      var held = fromEl.value;
+      fromEl.value = toEl.value;
+      toEl.value = held;
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      if (!fromEl.value.trim() || !toEl.value.trim()) {
+        status.textContent = "Tell us where you're leaving from and where you're going.";
+        (fromEl.value.trim() ? toEl : fromEl).focus();
+        return;
+      }
+
+      var offering = document.getElementById("tab-offer").getAttribute("aria-selected") === "true";
+      status.textContent = (offering ? "Publishing " : "Searching ") +
+        fromEl.value.trim() + " → " + toEl.value.trim() +
+        " on " + dateEl.value + " · " + seatsEl.value +
+        (seatsEl.value === "1" ? " seat" : " seats") + " — booking opens soon.";
+    });
+  })();
+</script>
 </body>
 </html>
