@@ -76,6 +76,20 @@
             border-radius: 50%;
         }
 
+        /* Static Duck in bottom right */
+        .static-duck {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            z-index: 2;
+        }
+
+        .static-duck img {
+            width: 100%;
+            height: auto;
+        }
+
         p {
             font-size: 1.1rem;
             color: #7f8c8d;
@@ -93,6 +107,11 @@
             <img src="duckling.png" alt="Travel Duckling">
         </div>
         <p>Your journey, shared.</p>
+    </div>
+
+    <div class="static-duck">
+        <!-- Ensure duck.png exists in your project folder -->
+        <img src="duck.png" alt="Static Duck">
     </div>
 </body>
 </html>
