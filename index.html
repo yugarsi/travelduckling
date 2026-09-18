@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TravelDuckling — Share the ride, split the cost</title>
-<meta name="description" content="TravelDuckling matches drivers with empty seats to travellers heading the same way. Find a ride or offer one in seconds.">
+<meta name="description" content="TravelDuckling matches drivers with empty seats to travellers heading the same way, and gathers people into group trips and activities. Find a ride, offer one, or join a group in seconds.">
 <meta name="theme-color" content="#0b1220">
+<link rel="icon" href="logo-mark.png" type="image/png">
+<meta property="og:title" content="TravelDuckling">
+<meta property="og:description" content="Find a ride, offer one, or join a group trip.">
+<meta property="og:image" content="logo-full.png">
 
 <style>
   /* ---------------------------------------------------------------------
@@ -46,6 +50,8 @@
 
   html, body { height: 100%; }
 
+  html { scroll-behavior: smooth; }
+
   body {
     margin: 0;
     font-family: var(--font-ui);
@@ -57,7 +63,7 @@
 
   img, svg { display: block; max-width: 100%; }
 
-  button, input, select { font: inherit; color: inherit; }
+  button, input, select, textarea { font: inherit; color: inherit; }
 
   :focus-visible {
     outline: 3px solid var(--duck-500);
@@ -135,6 +141,8 @@
     flex-direction: column;
   }
 
+  .page > main { flex: 1; }
+
   /* ---------------------------------------------------------------------
      Header
   --------------------------------------------------------------------- */
@@ -150,22 +158,16 @@
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.6rem;
     text-decoration: none;
     color: #fff;
   }
 
   .brand__mark {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(160deg, #fff6d6, var(--duck-500));
-    box-shadow: var(--shadow-md);
+    width: auto;
+    height: 46px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
   }
-
-  .brand__mark svg { width: 30px; height: 30px; }
 
   .brand__name {
     font-size: 1.2rem;
@@ -206,7 +208,7 @@
 
   .site-nav .nav-cta:hover { background: #fff; }
 
-  @media (max-width: 720px) {
+  @media (max-width: 860px) {
     .site-nav a:not(.nav-cta) { display: none; }
   }
 
@@ -214,10 +216,10 @@
      Hero
   --------------------------------------------------------------------- */
   .hero {
-    flex: 1;
     width: var(--shell);
     margin-inline: auto;
-    padding-block: clamp(2rem, 7vh, 4.5rem) 3rem;
+    min-height: calc(100dvh - 9rem);
+    padding-block: clamp(1rem, 4vh, 2.5rem) 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,19 +229,10 @@
   }
 
   .hero__logo {
-    width: clamp(112px, 18vw, 148px);
-    height: clamp(112px, 18vw, 148px);
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: radial-gradient(circle at 32% 26%, #fffdf4, #ffe8a3 55%, var(--duck-600));
-    box-shadow: var(--shadow-lg), 0 0 0 10px rgba(255, 255, 255, 0.10);
+    width: clamp(230px, 34vw, 360px);
+    height: auto;
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
     animation: bob 5s ease-in-out infinite;
-  }
-
-  .hero__logo svg {
-    width: 66%;
-    height: 66%;
   }
 
   @keyframes bob {
@@ -248,7 +241,7 @@
   }
 
   .hero__title {
-    margin: 1.4rem 0 0;
+    margin: 0.9rem 0 0;
     font-size: clamp(2.1rem, 5.6vw, 3.4rem);
     font-weight: 750;
     letter-spacing: -0.035em;
@@ -462,6 +455,20 @@
     color: rgba(255, 255, 255, 0.85);
   }
 
+  .search__aside {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  .search__aside a {
+    color: var(--duck-500);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .search__aside a:hover { text-decoration: underline; }
+
   @media (max-width: 900px) {
     .search__panel {
       grid-template-columns: 1fr 1fr;
@@ -519,6 +526,527 @@
   }
 
   /* ---------------------------------------------------------------------
+     Buttons (shared by the group-trip surfaces)
+  --------------------------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.7rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-size: 0.92rem;
+    font-weight: 650;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.18s ease, color 0.18s ease,
+                border-color 0.18s ease, transform 0.12s ease;
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn svg { width: 17px; height: 17px; }
+
+  .btn--duck {
+    background: var(--duck-500);
+    color: var(--ink-900);
+  }
+
+  .btn--duck:hover { background: #fff; }
+
+  .btn--dark {
+    background: var(--ink-900);
+    color: #fff;
+  }
+
+  .btn--dark:hover { background: #1c2b4a; }
+
+  .btn--quiet {
+    background: transparent;
+    border-color: var(--hairline);
+    color: var(--ink-700);
+  }
+
+  .btn--quiet:hover { background: rgba(13, 21, 38, 0.05); }
+
+  .btn[disabled] {
+    cursor: default;
+    opacity: 0.85;
+    transform: none;
+  }
+
+  /* ---------------------------------------------------------------------
+     Group trips & activities
+  --------------------------------------------------------------------- */
+  .groups {
+    width: var(--shell);
+    margin-inline: auto;
+    padding-block: clamp(2.5rem, 8vh, 4.5rem) clamp(2rem, 6vh, 3.5rem);
+    color: #fff;
+    scroll-margin-top: 1.5rem;
+  }
+
+  .groups__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1.25rem;
+  }
+
+  .groups__intro { max-width: 56ch; }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--duck-500);
+  }
+
+  .groups__title {
+    margin: 0.4rem 0 0;
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    font-weight: 750;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.3);
+  }
+
+  .groups__lede {
+    margin: 0.6rem 0 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .groups__head .btn { margin-left: auto; }
+
+  /* Toolbar: free-text search, category chips, spots-only toggle */
+  .groups__toolbar {
+    margin-top: clamp(1.5rem, 4vh, 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .groups__search {
+    flex: 1 1 250px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.62rem 1.05rem;
+    border-radius: var(--radius-pill);
+    background: rgba(13, 21, 38, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(8px);
+  }
+
+  .groups__search svg {
+    flex: none;
+    width: 17px;
+    height: 17px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .groups__search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    outline: none;
+  }
+
+  .groups__search input::placeholder { color: rgba(255, 255, 255, 0.5); }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chip {
+    padding: 0.5rem 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius-pill);
+    background: rgba(13, 21, 38, 0.45);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+
+  .chip:hover { color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+
+  .chip[aria-pressed="true"] {
+    background: var(--duck-500);
+    border-color: var(--duck-500);
+    color: var(--ink-900);
+  }
+
+  .groups__count {
+    margin: 1.1rem 0 0;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  /* Card grid */
+  .group-grid {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1.1rem;
+    grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+  }
+
+  .group-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--ink-900);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .group-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .group-card[hidden] { display: none; }
+
+  .group-card__cover {
+    position: relative;
+    height: 112px;
+    display: grid;
+    place-items: center;
+    background: var(--cover, linear-gradient(140deg, #33415c, #64748b));
+    font-size: 2.6rem;
+    line-height: 1;
+  }
+
+  /* Faint dot field echoing the starfield, so covers don't read as flat slabs. */
+  .group-card__cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+    background-size: 22px 22px;
+    opacity: 0.4;
+  }
+
+  .group-card__pill {
+    position: absolute;
+    top: 0.7rem;
+    z-index: 1;
+    padding: 0.28rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(6px);
+  }
+
+  .group-card__pill--category {
+    left: 0.7rem;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink-900);
+  }
+
+  .group-card__pill--when {
+    right: 0.7rem;
+    background: rgba(13, 21, 38, 0.62);
+    color: #fff;
+  }
+
+  .group-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.5rem;
+    padding: 1rem 1.1rem 1.1rem;
+  }
+
+  .group-card__title {
+    margin: 0;
+    font-size: 1.03rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+  }
+
+  .group-card__place {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--ink-500);
+  }
+
+  .group-card__place svg { width: 14px; height: 14px; flex: none; }
+
+  .group-card__desc {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-700);
+  }
+
+  .group-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: auto;
+    padding-top: 0.7rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-700);
+  }
+
+  .avatars {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .avatars li {
+    width: 27px;
+    height: 27px;
+    margin-right: -8px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display: grid;
+    place-items: center;
+    background: var(--av, var(--ink-500));
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .avatars li:last-child { margin-right: 0; }
+
+  .group-card__foot {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .group-card__price { font-size: 0.82rem; color: var(--ink-500); }
+
+  .group-card__price strong {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 750;
+    color: var(--ink-900);
+  }
+
+  .group-card__foot .btn {
+    margin-left: auto;
+    padding: 0.6rem 1.05rem;
+    font-size: 0.86rem;
+  }
+
+  .group-card--joined .btn--duck {
+    background: rgba(13, 21, 38, 0.06);
+    color: var(--ink-700);
+  }
+
+  .group-card--full .group-card__cover { filter: saturate(0.55); }
+
+  /* A group created from the dialog lands at the top of the grid. */
+  .group-card--new {
+    animation: pop-in 0.4s ease both;
+    outline: 2px solid var(--duck-500);
+    outline-offset: 2px;
+  }
+
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(14px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .groups__empty {
+    margin: 1.5rem 0 0;
+    padding: 2.25rem 1.25rem;
+    border: 1px dashed rgba(255, 255, 255, 0.24);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .groups__empty[hidden] { display: none; }
+
+  /* ---------------------------------------------------------------------
+     Create-a-group dialog
+  --------------------------------------------------------------------- */
+  .dialog {
+    width: min(620px, 100% - 2rem);
+    max-height: calc(100dvh - 3rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: #fff;
+    color: var(--ink-900);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .dialog::backdrop {
+    background: rgba(6, 11, 22, 0.62);
+    backdrop-filter: blur(3px);
+  }
+
+  .dialog__head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.25rem 1.4rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .dialog__head img { width: auto; height: 42px; flex: none; }
+
+  .dialog__title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+  }
+
+  .dialog__subtitle {
+    margin: 0.15rem 0 0;
+    font-size: 0.86rem;
+    color: var(--ink-500);
+  }
+
+  .dialog__close {
+    margin-left: auto;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(13, 21, 38, 0.06);
+    color: var(--ink-700);
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+  }
+
+  .dialog__close:hover { background: rgba(13, 21, 38, 0.12); }
+
+  .dialog__close svg { width: 16px; height: 16px; }
+
+  .dialog__form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    padding: 1.25rem 1.4rem;
+    overflow-y: auto;
+  }
+
+  .form-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+
+  .form-field--wide { grid-column: 1 / -1; }
+
+  .form-field label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-500);
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .form-field textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    border-color: var(--duck-600);
+    box-shadow: 0 0 0 3px rgba(255, 204, 51, 0.28);
+  }
+
+  .form-field input::placeholder,
+  .form-field textarea::placeholder { color: var(--ink-300); }
+
+  .radio-row { display: flex; gap: 0.5rem; }
+
+  .radio-row label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-700);
+    cursor: pointer;
+  }
+
+  .radio-row input { width: auto; padding: 0; accent-color: var(--duck-600); }
+
+  .radio-row label:has(input:checked) {
+    border-color: var(--duck-600);
+    background: rgba(255, 204, 51, 0.14);
+    color: var(--ink-900);
+  }
+
+  .dialog__error {
+    grid-column: 1 / -1;
+    margin: 0;
+    min-height: 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #c2401f;
+  }
+
+  .dialog__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    grid-column: 1 / -1;
+    padding-top: 0.25rem;
+  }
+
+  @media (max-width: 560px) {
+    .dialog__form { grid-template-columns: 1fr; }
+    .groups__head .btn { margin-left: 0; }
+  }
+
+  /* ---------------------------------------------------------------------
      Footer + floating duck
   --------------------------------------------------------------------- */
   .site-footer {
@@ -546,7 +1074,8 @@
     position: fixed;
     right: clamp(1rem, 3vw, 2rem);
     bottom: clamp(1rem, 3vw, 2rem);
-    width: clamp(64px, 9vw, 92px);
+    width: clamp(64px, 9vw, 96px);
+    height: auto;
     pointer-events: none;
     filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.35));
     animation: paddle 6s ease-in-out infinite;
@@ -562,6 +1091,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
@@ -578,129 +1108,354 @@
     <div class="backdrop__scrim"></div>
   </div>
 
-  <!-- Duck logo, defined once and re-used via <use>. -->
-  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
-    <symbol id="icon-duck" viewBox="2.5 5 120 120">
-      <path d="M26 72 6 56c-1 13 4 25 14 33z" fill="var(--duck-700)"/>
-      <ellipse cx="56" cy="82" rx="42" ry="27" fill="var(--duck-500)"/>
-      <path d="M34 76c14-9 32-8 45 3-4 15-19 23-34 18-8-3-13-12-11-21z" fill="var(--duck-600)"/>
-      <circle cx="80" cy="44" r="23" fill="var(--duck-500)"/>
-      <path d="M99 39c12-3 20 0 20 6s-8 10-20 7z" fill="var(--beak-500)"/>
-      <circle cx="85" cy="38" r="4" fill="#2b2112"/>
-      <circle cx="86.5" cy="36.5" r="1.4" fill="#fff"/>
-    </symbol>
-  </svg>
-
   <div class="page">
     <header class="site-header">
       <a class="brand" href="/">
-        <span class="brand__mark"><svg aria-hidden="true"><use href="#icon-duck"/></svg></span>
+        <img class="brand__mark" src="logo-mark.png" alt="" width="371" height="325">
         <span class="brand__name">Travel<span>Duckling</span></span>
       </a>
 
       <nav class="site-nav" aria-label="Main">
         <a href="#how-it-works">How it works</a>
+        <a href="#group-trips">Group trips</a>
         <a href="#offer">Offer a ride</a>
         <a href="#help">Help</a>
         <a class="nav-cta" href="#login">Log in</a>
       </nav>
     </header>
 
-    <main class="hero">
-      <div class="hero__logo">
-        <svg role="img" aria-label="TravelDuckling"><use href="#icon-duck"/></svg>
-      </div>
+    <main>
+      <section class="hero">
+        <img class="hero__logo" src="logo-duck.png" alt="TravelDuckling" width="593" height="325">
 
-      <h1 class="hero__title">Share the ride,<br><em>split the cost</em></h1>
-      <p class="hero__subtitle">
-        Thousands of drivers are already heading your way. Grab a seat, or fill yours
-        and make the trip pay for itself.
-      </p>
+        <h1 class="hero__title">Share the ride,<br><em>split the cost</em></h1>
+        <p class="hero__subtitle">
+          Thousands of drivers are already heading your way. Grab a seat, or fill yours
+          and make the trip pay for itself.
+        </p>
 
-      <section class="search" aria-label="Search for a ride">
-        <div class="search__tabs" role="tablist" aria-label="Search mode">
-          <button class="search__tab" id="tab-find" type="button" role="tab" aria-selected="true" aria-controls="search-form">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        <section class="search" aria-label="Search for a ride">
+          <div class="search__tabs" role="tablist" aria-label="Search mode">
+            <button class="search__tab" id="tab-find" type="button" role="tab" aria-selected="true" aria-controls="search-form">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+              </svg>
+              Find a ride
+            </button>
+            <button class="search__tab" id="tab-offer" type="button" role="tab" aria-selected="false" aria-controls="search-form">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M5 16h14M6.5 16 8 9h8l1.5 7"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/>
+              </svg>
+              Offer a ride
+            </button>
+          </div>
+
+          <form class="search__panel" id="search-form" role="tabpanel" aria-labelledby="tab-find" novalidate>
+            <div class="field field--from">
+              <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>
+              </svg>
+              <span class="field__body">
+                <label class="field__label" for="from">Leaving from</label>
+                <input class="field__input" id="from" name="from" type="text" placeholder="Seattle, US" autocomplete="off">
+              </span>
+            </div>
+
+            <div class="field field--to">
+              <button class="swap" id="swap" type="button" title="Swap pickup and destination">
+                <span class="visually-hidden">Swap pickup and destination</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M7 4 4 7l3 3M4 7h13M17 20l3-3-3-3M20 17H7"/>
+                </svg>
+              </button>
+              <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+              </svg>
+              <span class="field__body">
+                <label class="field__label" for="to">Going to</label>
+                <input class="field__input" id="to" name="to" type="text" placeholder="Santa Monica, US" autocomplete="off">
+              </span>
+            </div>
+
+            <div class="field field--date">
+              <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/>
+              </svg>
+              <span class="field__body">
+                <label class="field__label" for="date">Date</label>
+                <input class="field__input" id="date" name="date" type="date">
+              </span>
+            </div>
+
+            <div class="field field--seats">
+              <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/>
+              </svg>
+              <span class="field__body">
+                <label class="field__label" for="seats">Seats</label>
+                <select class="field__input" id="seats" name="seats">
+                  <option value="1">1 passenger</option>
+                  <option value="2">2 passengers</option>
+                  <option value="3">3 passengers</option>
+                  <option value="4">4 passengers</option>
+                </select>
+              </span>
+            </div>
+
+            <button class="search__submit" type="submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+              </svg>
+              <span id="submit-label">Search</span>
+            </button>
+          </form>
+
+          <p class="search__status" id="search-status" role="status" aria-live="polite"></p>
+          <p class="search__aside">
+            Travelling with other people? <a href="#group-trips">Browse group trips &amp; activities →</a>
+          </p>
+        </section>
+
+        <ul class="stats">
+          <li><strong>12k+</strong><span>rides shared</span></li>
+          <li><strong>180+</strong><span>cities covered</span></li>
+          <li><strong>4.9★</strong><span>average driver rating</span></li>
+        </ul>
+      </section>
+
+      <!-- ================================================================
+           Feature 2 — group trips & activities
+      ================================================================= -->
+      <section class="groups" id="group-trips" aria-labelledby="groups-title">
+        <div class="groups__head">
+          <div class="groups__intro">
+            <p class="eyebrow">Group trips &amp; activities</p>
+            <h2 class="groups__title" id="groups-title">Don't travel alone —<br>find your flock</h2>
+            <p class="groups__lede">
+              Join a trip someone has already planned, or start your own and let
+              travellers heading the same way fill the spots.
+            </p>
+          </div>
+
+          <button class="btn btn--duck" id="create-open" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
             </svg>
-            Find a ride
-          </button>
-          <button class="search__tab" id="tab-offer" type="button" role="tab" aria-selected="false" aria-controls="search-form">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-              <path d="M5 16h14M6.5 16 8 9h8l1.5 7"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/>
-            </svg>
-            Offer a ride
+            Create a group
           </button>
         </div>
 
-        <form class="search__panel" id="search-form" role="tabpanel" aria-labelledby="tab-find" novalidate>
-          <div class="field field--from">
-            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>
-            </svg>
-            <span class="field__body">
-              <label class="field__label" for="from">Leaving from</label>
-              <input class="field__input" id="from" name="from" type="text" placeholder="Seattle, US" autocomplete="off">
-            </span>
-          </div>
-
-          <div class="field field--to">
-            <button class="swap" id="swap" type="button" title="Swap pickup and destination">
-              <span class="visually-hidden">Swap pickup and destination</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M7 4 4 7l3 3M4 7h13M17 20l3-3-3-3M20 17H7"/>
-              </svg>
-            </button>
-            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
-            </svg>
-            <span class="field__body">
-              <label class="field__label" for="to">Going to</label>
-              <input class="field__input" id="to" name="to" type="text" placeholder="Santa Monica, US" autocomplete="off">
-            </span>
-          </div>
-
-          <div class="field field--date">
-            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-              <rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/>
-            </svg>
-            <span class="field__body">
-              <label class="field__label" for="date">Date</label>
-              <input class="field__input" id="date" name="date" type="date">
-            </span>
-          </div>
-
-          <div class="field field--seats">
-            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-              <circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/>
-            </svg>
-            <span class="field__body">
-              <label class="field__label" for="seats">Seats</label>
-              <select class="field__input" id="seats" name="seats">
-                <option value="1">1 passenger</option>
-                <option value="2">2 passengers</option>
-                <option value="3">3 passengers</option>
-                <option value="4">4 passengers</option>
-              </select>
-            </span>
-          </div>
-
-          <button class="search__submit" type="submit">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <div class="groups__toolbar">
+          <div class="groups__search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
             </svg>
-            <span id="submit-label">Search</span>
-          </button>
-        </form>
+            <label class="visually-hidden" for="group-query">Search group trips and activities</label>
+            <input id="group-query" type="search" placeholder="Search a place or activity" autocomplete="off">
+          </div>
 
-        <p class="search__status" id="search-status" role="status" aria-live="polite"></p>
+          <ul class="chips" id="group-categories" aria-label="Filter by category">
+            <li><button class="chip" type="button" data-category="all" aria-pressed="true">All</button></li>
+            <li><button class="chip" type="button" data-category="hiking" aria-pressed="false">Hiking</button></li>
+            <li><button class="chip" type="button" data-category="roadtrip" aria-pressed="false">Road trip</button></li>
+            <li><button class="chip" type="button" data-category="food" aria-pressed="false">Food &amp; drink</button></li>
+            <li><button class="chip" type="button" data-category="culture" aria-pressed="false">Culture</button></li>
+            <li><button class="chip" type="button" data-category="beach" aria-pressed="false">Beach</button></li>
+            <li><button class="chip" type="button" data-category="nightlife" aria-pressed="false">Nightlife</button></li>
+          </ul>
+
+          <button class="chip" type="button" id="spots-only" aria-pressed="false">Spots left only</button>
+        </div>
+
+        <p class="groups__count" id="group-count" role="status" aria-live="polite"></p>
+
+        <ul class="group-grid" id="group-grid">
+          <li class="group-card" data-category="hiking" data-spots="3"
+              data-keywords="sunrise hike camp mount rainier washington hiking outdoors">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #2f7d6f, #57b89f)">
+              <span class="group-card__pill group-card__pill--category">Hiking</span>
+              <span class="group-card__pill group-card__pill--when">Oct 4–6</span>
+              <span aria-hidden="true">🥾</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Sunrise hike &amp; overnight camp</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Mount Rainier, WA
+              </p>
+              <p class="group-card__desc">Two nights under canvas, an easy 6-mile loop and a very early alarm. Gear sharing sorted in the group chat.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#d99a10">MK</li><li style="--av:#2f7d6f">JP</li>
+                  <li style="--av:#4b3a86">AR</li><li style="--av:#c2521f">+2</li>
+                </ul>
+                <span>3 of 8 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$85</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="roadtrip" data-spots="2"
+              data-keywords="pacific coast highway road trip san francisco los angeles big sur driving">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #d99a10, #ffd257)">
+              <span class="group-card__pill group-card__pill--category">Road trip</span>
+              <span class="group-card__pill group-card__pill--when">Oct 11–14</span>
+              <span aria-hidden="true">🚐</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Pacific Coast Highway, SF → LA</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                San Francisco, CA
+              </p>
+              <p class="group-card__desc">Four days, one van, three drivers on rotation. Big Sur, Monterey and as many roadside diners as we can fit in.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#1f6fb2">TS</li><li style="--av:#c2521f">LN</li>
+                  <li style="--av:#2f7d6f">DW</li><li style="--av:#4b3a86">+1</li>
+                </ul>
+                <span>2 of 6 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$220</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="food" data-spots="5"
+              data-keywords="ramen crawl capitol hill seattle food dinner noodles restaurants">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #c2521f, #ff9f52)">
+              <span class="group-card__pill group-card__pill--category">Food &amp; drink</span>
+              <span class="group-card__pill group-card__pill--when">Sep 26</span>
+              <span aria-hidden="true">🍜</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Ramen crawl through Capitol Hill</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Seattle, WA
+              </p>
+              <p class="group-card__desc">Four bowls, four kitchens, one evening. Split plates, compare broth, argue about it afterwards.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#c2521f">HR</li><li style="--av:#d99a10">EM</li>
+                  <li style="--av:#1f6fb2">+3</li>
+                </ul>
+                <span>5 of 10 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$40</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card group-card--full" data-category="beach" data-spots="0"
+              data-keywords="snorkel beach bbq santa monica california swimming coast">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #1f6fb2, #5cc6f0)">
+              <span class="group-card__pill group-card__pill--category">Beach</span>
+              <span class="group-card__pill group-card__pill--when">Oct 18</span>
+              <span aria-hidden="true">🏝️</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Snorkel day &amp; sunset beach BBQ</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Santa Monica, CA
+              </p>
+              <p class="group-card__desc">Masks and fins provided. Grill fires up at six — bring something to throw on it.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#1f6fb2">NB</li><li style="--av:#2f7d6f">KO</li>
+                  <li style="--av:#4b3a86">SV</li><li style="--av:#d99a10">+9</li>
+                </ul>
+                <span>Full — 12 joined</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$55</strong>per person</span>
+                <button class="btn btn--quiet" type="button" data-waitlist>Join waitlist</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="culture" data-spots="6"
+              data-keywords="museum walking tour portland oregon old town culture galleries architecture">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #4b3a86, #8a74d6)">
+              <span class="group-card__pill group-card__pill--category">Culture</span>
+              <span class="group-card__pill group-card__pill--when">Nov 1–2</span>
+              <span aria-hidden="true">🏛️</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Museum hop &amp; old-town walking tour</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Portland, OR
+              </p>
+              <p class="group-card__desc">A local guide on Saturday, three galleries on Sunday, and a slow coffee between each one.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#4b3a86">RG</li><li style="--av:#c2521f">AL</li>
+                  <li style="--av:#2f7d6f">+1</li>
+                </ul>
+                <span>6 of 9 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$30</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="nightlife" data-spots="1"
+              data-keywords="live jazz night late supper chicago illinois music bar">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #3a2a5c, #7b5ac0)">
+              <span class="group-card__pill group-card__pill--category">Nightlife</span>
+              <span class="group-card__pill group-card__pill--when">Oct 9</span>
+              <span aria-hidden="true">🎷</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Live jazz night &amp; late supper</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Chicago, IL
+              </p>
+              <p class="group-card__desc">Two sets at a basement club in the Loop, then somewhere still serving food at midnight.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#3a2a5c">CF</li><li style="--av:#d99a10">MB</li>
+                  <li style="--av:#1f6fb2">JT</li><li style="--av:#c2521f">+3</li>
+                </ul>
+                <span>1 of 7 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$65</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <p class="groups__empty" id="group-empty" hidden>
+          No group trips match that yet — try a different filter, or
+          <strong>create one</strong> and let people come to you.
+        </p>
       </section>
-
-      <ul class="stats">
-        <li><strong>12k+</strong><span>rides shared</span></li>
-        <li><strong>180+</strong><span>cities covered</span></li>
-        <li><strong>4.9★</strong><span>average driver rating</span></li>
-      </ul>
     </main>
 
     <footer class="site-footer">
@@ -711,7 +1466,88 @@
     </footer>
   </div>
 
-  <svg class="floating-duck" viewBox="0 0 120 120" aria-hidden="true"><use href="#icon-duck"/></svg>
+  <!-- Create-a-group dialog -->
+  <dialog class="dialog" id="create-dialog" aria-labelledby="create-title">
+    <div class="dialog__head">
+      <img src="logo-mark.png" alt="" width="371" height="325">
+      <div>
+        <h2 class="dialog__title" id="create-title">Create a group trip</h2>
+        <p class="dialog__subtitle">Set the shape of it — travellers can request a spot.</p>
+      </div>
+      <button class="dialog__close" id="create-close" type="button">
+        <span class="visually-hidden">Close</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form class="dialog__form" id="create-form" novalidate>
+      <div class="form-field form-field--wide">
+        <label for="g-title">Trip or activity name</label>
+        <input id="g-title" name="title" type="text" placeholder="Sunrise hike &amp; overnight camp" autocomplete="off">
+      </div>
+
+      <div class="form-field">
+        <label for="g-place">Destination</label>
+        <input id="g-place" name="place" type="text" placeholder="Mount Rainier, WA" autocomplete="off">
+      </div>
+
+      <div class="form-field">
+        <label for="g-category">Category</label>
+        <select id="g-category" name="category">
+          <option value="hiking">Hiking</option>
+          <option value="roadtrip">Road trip</option>
+          <option value="food">Food &amp; drink</option>
+          <option value="culture">Culture</option>
+          <option value="beach">Beach</option>
+          <option value="nightlife">Nightlife</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="g-start">Starts</label>
+        <input id="g-start" name="start" type="date">
+      </div>
+
+      <div class="form-field">
+        <label for="g-end">Ends</label>
+        <input id="g-end" name="end" type="date">
+      </div>
+
+      <div class="form-field">
+        <label for="g-size">Group size</label>
+        <input id="g-size" name="size" type="number" min="2" max="40" value="8">
+      </div>
+
+      <div class="form-field">
+        <label for="g-cost">Cost per person (USD)</label>
+        <input id="g-cost" name="cost" type="number" min="0" step="5" value="0">
+      </div>
+
+      <div class="form-field form-field--wide">
+        <label for="g-desc">What's the plan?</label>
+        <textarea id="g-desc" name="desc" placeholder="Where you'll go, what's included, what people should bring."></textarea>
+      </div>
+
+      <div class="form-field form-field--wide">
+        <label id="g-visibility-label">Who can see it</label>
+        <div class="radio-row" role="radiogroup" aria-labelledby="g-visibility-label">
+          <label><input type="radio" name="visibility" value="public" checked> Public</label>
+          <label><input type="radio" name="visibility" value="invite"> Invite only</label>
+        </div>
+      </div>
+
+      <p class="dialog__error" id="create-error" role="alert"></p>
+
+      <div class="dialog__foot">
+        <button class="btn btn--quiet" type="button" id="create-cancel">Cancel</button>
+        <button class="btn btn--dark" type="submit">Create group</button>
+      </div>
+    </form>
+  </dialog>
+
+  <img class="floating-duck" src="logo-mark.png" alt="" width="371" height="325" aria-hidden="true">
 
 <script>
   (function () {
@@ -769,6 +1605,273 @@
         " on " + dateEl.value + " · " + seatsEl.value +
         (seatsEl.value === "1" ? " seat" : " seats") + " — booking opens soon.";
     });
+  })();
+
+  /* --------------------------------------------------------------------
+     Group trips & activities — browse, filter, and create.
+     Front-end only: created groups live in the DOM for this page view.
+  -------------------------------------------------------------------- */
+  (function () {
+    "use strict";
+
+    var CATEGORIES = {
+      hiking:    { label: "Hiking",        emoji: "🥾", cover: "linear-gradient(140deg, #2f7d6f, #57b89f)" },
+      roadtrip:  { label: "Road trip",     emoji: "🚐", cover: "linear-gradient(140deg, #d99a10, #ffd257)" },
+      food:      { label: "Food & drink",  emoji: "🍜", cover: "linear-gradient(140deg, #c2521f, #ff9f52)" },
+      culture:   { label: "Culture",       emoji: "🏛️", cover: "linear-gradient(140deg, #4b3a86, #8a74d6)" },
+      beach:     { label: "Beach",         emoji: "🏝️", cover: "linear-gradient(140deg, #1f6fb2, #5cc6f0)" },
+      nightlife: { label: "Nightlife",     emoji: "🎷", cover: "linear-gradient(140deg, #3a2a5c, #7b5ac0)" }
+    };
+
+    var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    var grid     = document.getElementById("group-grid");
+    var empty    = document.getElementById("group-empty");
+    var count    = document.getElementById("group-count");
+    var query    = document.getElementById("group-query");
+    var chipList = document.getElementById("group-categories");
+    var spotsOnly = document.getElementById("spots-only");
+
+    var dialog   = document.getElementById("create-dialog");
+    var openBtn  = document.getElementById("create-open");
+    var closeBtn = document.getElementById("create-close");
+    var cancel   = document.getElementById("create-cancel");
+    var createForm = document.getElementById("create-form");
+    var createError = document.getElementById("create-error");
+
+    var activeCategory = "all";
+
+    /* ---- Browsing ---------------------------------------------------- */
+
+    function cards() {
+      return Array.prototype.slice.call(grid.children);
+    }
+
+    function matches(card, needle) {
+      if (activeCategory !== "all" && card.dataset.category !== activeCategory) return false;
+      if (spotsOnly.getAttribute("aria-pressed") === "true" && Number(card.dataset.spots) < 1) return false;
+      if (!needle) return true;
+
+      var haystack = (card.dataset.keywords || "") + " " +
+        card.querySelector(".group-card__title").textContent + " " +
+        card.querySelector(".group-card__place").textContent;
+      return haystack.toLowerCase().indexOf(needle) !== -1;
+    }
+
+    function render() {
+      var needle = query.value.trim().toLowerCase();
+      var shown = 0;
+
+      cards().forEach(function (card) {
+        var keep = matches(card, needle);
+        card.hidden = !keep;
+        if (keep) shown += 1;
+      });
+
+      empty.hidden = shown > 0;
+      count.textContent = shown === 1
+        ? "1 group open"
+        : shown + " groups open";
+    }
+
+    query.addEventListener("input", render);
+
+    chipList.addEventListener("click", function (event) {
+      var chip = event.target.closest(".chip");
+      if (!chip) return;
+
+      activeCategory = chip.dataset.category;
+      Array.prototype.forEach.call(chipList.querySelectorAll(".chip"), function (c) {
+        c.setAttribute("aria-pressed", String(c === chip));
+      });
+      render();
+    });
+
+    spotsOnly.addEventListener("click", function () {
+      var on = spotsOnly.getAttribute("aria-pressed") === "true";
+      spotsOnly.setAttribute("aria-pressed", String(!on));
+      render();
+    });
+
+    // Join / waitlist are stubs until the backend lands — flip the button so
+    // the intent is at least acknowledged.
+    grid.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-join], [data-waitlist]");
+      if (!btn || btn.disabled) return;
+
+      var waitlist = btn.hasAttribute("data-waitlist");
+      btn.textContent = waitlist ? "On the waitlist ✓" : "Request sent ✓";
+      btn.disabled = true;
+      btn.closest(".group-card").classList.add("group-card--joined");
+    });
+
+    /* ---- Creating ---------------------------------------------------- */
+
+    function prettyDate(value) {
+      var parts = value.split("-");
+      if (parts.length !== 3) return "";
+      return MONTHS[Number(parts[1]) - 1] + " " + Number(parts[2]);
+    }
+
+    function dateRange(start, end) {
+      var a = prettyDate(start);
+      var b = prettyDate(end);
+      if (!a) return "Dates TBC";
+      if (!b || b === a) return a;
+      return a + " – " + b;
+    }
+
+    function el(tag, className, text) {
+      var node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    var PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/>' +
+      '<circle cx="12" cy="10" r="2.5"/></svg>';
+
+    function buildCard(data) {
+      var meta = CATEGORIES[data.category];
+      var spots = Math.max(0, data.size - 1); // the host takes one spot
+
+      var card = el("li", "group-card group-card--new");
+      card.dataset.category = data.category;
+      card.dataset.spots = String(spots);
+      card.dataset.keywords = [data.title, data.place, meta.label, data.desc].join(" ").toLowerCase();
+
+      var cover = el("div", "group-card__cover");
+      cover.style.setProperty("--cover", meta.cover);
+      cover.appendChild(el("span", "group-card__pill group-card__pill--category", meta.label));
+      cover.appendChild(el("span", "group-card__pill group-card__pill--when", dateRange(data.start, data.end)));
+      var glyph = el("span", null, meta.emoji);
+      glyph.setAttribute("aria-hidden", "true");
+      cover.appendChild(glyph);
+      card.appendChild(cover);
+
+      var body = el("div", "group-card__body");
+      body.appendChild(el("h3", "group-card__title", data.title));
+
+      var place = el("p", "group-card__place");
+      place.innerHTML = PIN;
+      place.appendChild(document.createTextNode(" " + data.place));
+      body.appendChild(place);
+
+      body.appendChild(el("p", "group-card__desc",
+        data.desc || "The host hasn't added a plan yet — ask in the group chat."));
+
+      var metaRow = el("div", "group-card__meta");
+      var avatars = el("ul", "avatars");
+      avatars.setAttribute("aria-hidden", "true");
+      var you = el("li", null, "You");
+      you.style.setProperty("--av", "#d99a10");
+      you.style.fontSize = "0.55rem";
+      avatars.appendChild(you);
+      metaRow.appendChild(avatars);
+      metaRow.appendChild(el("span", null,
+        spots + " of " + data.size + " spots left" +
+        (data.visibility === "invite" ? " · invite only" : "")));
+      body.appendChild(metaRow);
+
+      var foot = el("div", "group-card__foot");
+      var price = el("span", "group-card__price");
+      price.appendChild(el("strong", null, data.cost > 0 ? "$" + data.cost : "Free"));
+      price.appendChild(document.createTextNode("per person"));
+      foot.appendChild(price);
+
+      var manage = el("button", "btn btn--quiet", "You're the host");
+      manage.type = "button";
+      manage.disabled = true;
+      foot.appendChild(manage);
+      body.appendChild(foot);
+
+      card.appendChild(body);
+      return card;
+    }
+
+    function openDialog() {
+      createError.textContent = "";
+      var todayIso = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString().slice(0, 10);
+      var start = document.getElementById("g-start");
+      var end = document.getElementById("g-end");
+      start.min = todayIso;
+      end.min = todayIso;
+      if (!start.value) start.value = todayIso;
+
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      document.getElementById("g-title").focus();
+    }
+
+    function closeDialog() {
+      if (typeof dialog.close === "function") dialog.close();
+      else dialog.removeAttribute("open");
+    }
+
+    openBtn.addEventListener("click", openDialog);
+    closeBtn.addEventListener("click", closeDialog);
+    cancel.addEventListener("click", closeDialog);
+
+    // Clicking the backdrop dismisses: the dialog element fills the viewport,
+    // so a click that lands on it rather than the panel is a backdrop click.
+    dialog.addEventListener("click", function (event) {
+      if (event.target === dialog) closeDialog();
+    });
+
+    createForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var data = {
+        title: document.getElementById("g-title").value.trim(),
+        place: document.getElementById("g-place").value.trim(),
+        category: document.getElementById("g-category").value,
+        start: document.getElementById("g-start").value,
+        end: document.getElementById("g-end").value,
+        size: Number(document.getElementById("g-size").value),
+        cost: Number(document.getElementById("g-cost").value) || 0,
+        desc: document.getElementById("g-desc").value.trim(),
+        visibility: createForm.elements.visibility.value
+      };
+
+      if (!data.title || !data.place) {
+        createError.textContent = "Give the group a name and a destination.";
+        document.getElementById(data.title ? "g-place" : "g-title").focus();
+        return;
+      }
+
+      if (!data.size || data.size < 2) {
+        createError.textContent = "A group needs room for at least 2 people.";
+        document.getElementById("g-size").focus();
+        return;
+      }
+
+      if (data.end && data.start && data.end < data.start) {
+        createError.textContent = "The end date falls before the start date.";
+        document.getElementById("g-end").focus();
+        return;
+      }
+
+      grid.insertBefore(buildCard(data), grid.firstChild);
+      createForm.reset();
+      closeDialog();
+
+      // Clear any active filter so the new group is definitely visible.
+      query.value = "";
+      spotsOnly.setAttribute("aria-pressed", "false");
+      activeCategory = "all";
+      Array.prototype.forEach.call(chipList.querySelectorAll(".chip"), function (c) {
+        c.setAttribute("aria-pressed", String(c.dataset.category === "all"));
+      });
+      render();
+
+      grid.firstChild.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+
+    render();
   })();
 </script>
 </body>
