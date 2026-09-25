@@ -70,7 +70,7 @@
         <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required></div>
         <aside class="verify-note" aria-label="Identity verification requirement">
           <span class="verify-icon" aria-hidden="true">✓</span>
-          <div><strong>Planning to host? Verify your ID first.</strong><p>Identity verification will be required before you can create group trips or offer rides. You can still browse and join trips without verifying. We’ll securely add the verification step when account services are connected.</p></div>
+          <div><strong>Planning to host? Verify your ID first.</strong><p>Before the API can let you offer a ride, your email must be verified and identity verification must be complete. We have not connected an identity verification provider yet, so ride publishing is unavailable during this prototype. Group trip hosting is still a front-end prototype.</p></div>
         </aside>
         <label class="consent"><input type="checkbox" name="verification-notice" required><span>I understand that I’ll need to verify my identity before creating a group trip or offering a ride.</span></label>
         <button class="submit" type="submit">Create account</button>
@@ -79,10 +79,36 @@
       <p class="signin">Already have an account? <a class="text-link" href="login.html">Log in</a></p>
     </section>
   </main>
-  <script>
-    document.getElementById("signup-form").addEventListener("submit", function (event) {
+  <script type="module">
+    import {
+      auth, authErrorMessage, createUserWithEmailAndPassword, sendEmailVerification,
+      signOut, updateProfile
+    } from "./firebase-auth.js";
+
+    const form = document.getElementById("signup-form");
+    const status = document.getElementById("signup-status");
+    const submit = form.querySelector("button[type=submit]");
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      document.getElementById("signup-status").textContent = "Account creation is ready to connect to your account service. ID verification will be required before hosting a trip or offering a ride.";
+      status.textContent = "";
+      submit.disabled = true;
+      submit.textContent = "Creating account…";
+      try {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        if (name) await updateProfile(credential.user, { displayName: name });
+        await sendEmailVerification(credential.user);
+        await signOut(auth);
+        status.textContent = "Account created. Check your email to verify your address, then log in. ID verification for hosting will be a separate step.";
+      } catch (error) {
+        status.textContent = authErrorMessage(error);
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Create account";
+      }
     });
   </script>
 </body>

@@ -315,7 +315,7 @@
     box-shadow: var(--shadow-lg);
     backdrop-filter: blur(14px);
     display: grid;
-    grid-template-columns: 1.25fr 1.25fr 1fr 0.8fr auto;
+    grid-template-columns: 1.2fr 1.2fr 1fr 0.8fr 0.8fr 0.8fr auto;
     align-items: stretch;
     gap: 0.25rem;
   }
@@ -447,6 +447,15 @@
   .search__submit:active { transform: scale(0.98); }
 
   .search__submit svg { width: 18px; height: 18px; }
+
+  .field[hidden] { display: none; }
+
+  .search__status a { color: var(--duck-500); font-weight: 700; }
+
+  .ride-results { display: grid; gap: 0.65rem; margin-top: 0.75rem; }
+  .ride-result { padding: 0.9rem 1rem; border: 1px solid rgba(255,255,255,.24); border-radius: var(--radius-md); background: rgba(255,255,255,.96); color: var(--ink-900); box-shadow: var(--shadow-md); }
+  .ride-result strong { display: block; margin-bottom: 0.25rem; }
+  .ride-result span { color: var(--ink-700); font-size: 0.9rem; }
 
   .search__status {
     margin: 0.7rem 0 0;
@@ -1177,13 +1186,33 @@
               </span>
             </div>
 
-            <div class="field field--date">
+            <div class="field field--mode" id="mode-field">
+              <span class="field__body">
+                <label class="field__label" for="departure-mode">Leaving</label>
+                <select class="field__input" id="departure-mode" name="departure_mode">
+                  <option value="now">Next 2 hours</option>
+                  <option value="range">Choose a date</option>
+                </select>
+              </span>
+            </div>
+
+            <div class="field field--date" id="date-field" hidden>
               <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                 <rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/>
               </svg>
               <span class="field__body">
-                <label class="field__label" for="date">Date</label>
+                <label class="field__label" for="date" id="date-label">Date</label>
                 <input class="field__input" id="date" name="date" type="date">
+              </span>
+            </div>
+
+            <div class="field field--time" id="time-field" hidden>
+              <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+              </svg>
+              <span class="field__body">
+                <label class="field__label" for="departure-time">Time</label>
+                <input class="field__input" id="departure-time" name="departure_time" type="time" value="09:00">
               </span>
             </div>
 
@@ -1211,6 +1240,7 @@
           </form>
 
           <p class="search__status" id="search-status" role="status" aria-live="polite"></p>
+          <div class="ride-results" id="ride-results" aria-live="polite"></div>
           <p class="search__aside">
             Travelling with other people? <a href="#group-trips">Browse group trips &amp; activities →</a>
           </p>
@@ -1549,20 +1579,47 @@
 
   <img class="floating-duck" src="logo-mark.png" alt="" width="371" height="325" aria-hidden="true">
 
-<script>
+<script type="module">
+  import { auth, onAuthStateChanged, signOut } from "./firebase-auth.js";
+
   (function () {
     "use strict";
 
+    var API_BASE_URL = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+      ? "http://127.0.0.1:8000"
+      : "https://travelduckling-api-kvoulafwoa-uw.a.run.app";
     var form    = document.getElementById("search-form");
     var fromEl  = document.getElementById("from");
     var toEl    = document.getElementById("to");
     var dateEl  = document.getElementById("date");
     var seatsEl = document.getElementById("seats");
+    var modeEl  = document.getElementById("departure-mode");
+    var dateField = document.getElementById("date-field");
+    var modeField = document.getElementById("mode-field");
+    var timeField = document.getElementById("time-field");
+    var timeEl = document.getElementById("departure-time");
+    var results = document.getElementById("ride-results");
     var status  = document.getElementById("search-status");
     var label   = document.getElementById("submit-label");
     var tabs    = Array.prototype.slice.call(document.querySelectorAll(".search__tab"));
 
     document.getElementById("year").textContent = String(new Date().getFullYear());
+    var accountLink = document.querySelector(".site-nav .nav-cta");
+    onAuthStateChanged(auth, function (user) {
+      if (!user) {
+        accountLink.textContent = "Log in";
+        accountLink.href = "login.html?next=index.html";
+        return;
+      }
+      accountLink.textContent = "Sign out";
+      accountLink.href = "#sign-out";
+    });
+    accountLink.addEventListener("click", function (event) {
+      if (auth.currentUser) {
+        event.preventDefault();
+        signOut(auth).catch(function () {});
+      }
+    });
 
     // Default the date picker to today and disallow trips in the past.
     var today = new Date();
@@ -1572,17 +1629,31 @@
     dateEl.value = iso;
     dateEl.min = iso;
 
+    function isOffering() {
+      return document.getElementById("tab-offer").getAttribute("aria-selected") === "true";
+    }
+
+    function updateFields() {
+      var offering = isOffering();
+      modeField.hidden = offering;
+      dateField.hidden = offering ? false : modeEl.value !== "range";
+      timeField.hidden = !offering;
+      form.setAttribute("aria-labelledby", offering ? "tab-offer" : "tab-find");
+      label.textContent = offering ? "Publish ride" : "Search";
+      document.querySelector("label[for=seats]").textContent = offering ? "Seats free" : "Seats";
+    }
+
     // Tabs switch the intent of the same form rather than swapping markup.
     tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
         tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t === tab)); });
-        var offering = tab.id === "tab-offer";
-        form.setAttribute("aria-labelledby", tab.id);
-        label.textContent = offering ? "Publish ride" : "Search";
-        seatsEl.previousElementSibling.textContent = offering ? "Seats free" : "Seats";
         status.textContent = "";
+        results.replaceChildren();
+        updateFields();
       });
     });
+    modeEl.addEventListener("change", updateFields);
+    updateFields();
 
     document.getElementById("swap").addEventListener("click", function () {
       var held = fromEl.value;
@@ -1599,11 +1670,90 @@
         return;
       }
 
-      var offering = document.getElementById("tab-offer").getAttribute("aria-selected") === "true";
-      status.textContent = (offering ? "Publishing " : "Searching ") +
-        fromEl.value.trim() + " → " + toEl.value.trim() +
-        " on " + dateEl.value + " · " + seatsEl.value +
-        (seatsEl.value === "1" ? " seat" : " seats") + " — booking opens soon.";
+      var offering = isOffering();
+      var user = auth.currentUser;
+      results.replaceChildren();
+      if (!user) {
+        status.innerHTML = 'Please <a href="login.html?next=index.html">log in</a> to use ride search and publishing.';
+        return;
+      }
+
+      var origin = fromEl.value.trim();
+      var destination = toEl.value.trim();
+      var headers = { "Content-Type": "application/json" };
+      status.textContent = offering ? "Publishing your ride…" : "Searching for rides…";
+      form.querySelector(".search__submit").disabled = true;
+
+      user.getIdToken().then(function (token) {
+        headers.Authorization = "Bearer " + token;
+        var url;
+        var request;
+        if (offering) {
+          if (!dateEl.value || !timeEl.value) throw new Error("Choose a departure date and time.");
+          var departure = new Date(dateEl.value + "T" + timeEl.value);
+          if (Number.isNaN(departure.getTime()) || departure <= new Date()) {
+            throw new Error("Choose a future departure date and time.");
+          }
+          url = API_BASE_URL + "/api/v1/rides";
+          request = fetch(url, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({
+              origin: origin,
+              destination: destination,
+              departure_at: departure.toISOString(),
+              available_seats: Number(seatsEl.value)
+            })
+          });
+        } else {
+          var params = new URLSearchParams({
+            origin: origin,
+            destination: destination,
+            departure_mode: modeEl.value,
+            seats: seatsEl.value
+          });
+          if (modeEl.value === "range") {
+            if (!dateEl.value) throw new Error("Choose a departure date.");
+            var start = new Date(dateEl.value + "T00:00:00");
+            var end = new Date(dateEl.value + "T00:00:00");
+            end.setDate(end.getDate() + 1);
+            if (start <= new Date()) start = new Date();
+            params.set("start_at", start.toISOString());
+            params.set("end_at", end.toISOString());
+          }
+          url = API_BASE_URL + "/api/v1/rides/search?" + params.toString();
+          request = fetch(url, { headers: headers });
+        }
+        return request.then(function (response) {
+          return response.json().catch(function () { return {}; }).then(function (body) {
+            if (!response.ok) {
+              if (response.status === 401) throw new Error("Your sign-in could not be verified. Please log in again.");
+              if (response.status === 403) throw new Error(body.detail || "The API is not ready to accept browser requests yet.");
+              if (response.status === 422) throw new Error(Array.isArray(body.detail) ? "Check the ride details and try again." : (body.detail || "Check the ride details and try again."));
+              throw new Error(body.detail || "The ride request failed. Please try again.");
+            }
+            if (offering) {
+              status.textContent = "Ride published. Ride ID: " + body.id;
+              return;
+            }
+            status.textContent = body.count === 1 ? "1 ride found." : body.count + " rides found.";
+            body.rides.forEach(function (ride) {
+              var card = document.createElement("article");
+              card.className = "ride-result";
+              var title = document.createElement("strong");
+              title.textContent = ride.origin + " → " + ride.destination;
+              var detail = document.createElement("span");
+              detail.textContent = new Date(ride.departure_at).toLocaleString() + " · " + ride.available_seats + " seat(s)";
+              card.append(title, detail);
+              results.appendChild(card);
+            });
+          });
+        });
+      }).catch(function (error) {
+        status.textContent = error.message || "The ride request failed. Please try again.";
+      }).finally(function () {
+        form.querySelector(".search__submit").disabled = false;
+      });
     });
   })();
 
