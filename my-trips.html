@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a30">
+  <title>My trips — TravelDuckling</title>
+  <link rel="icon" href="logo-mark.png">
+  <style>
+    :root { color-scheme: light; --navy:#101a30; --navy-2:#1b2945; --gold:#ffc928; --cream:#f7f8fc; --ink:#17233c; --muted:#68758e; --line:#e3e8f0; --green:#13864d; --shadow:0 14px 40px rgba(21,36,65,.08); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--cream); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    button,input,textarea { font:inherit; }
+    .topbar { background:var(--navy); color:#fff; }
+    .topbar__inner { width:min(1120px,calc(100% - 2rem)); min-height:76px; margin:auto; display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+    .brand { display:flex; align-items:center; gap:.65rem; color:#fff; font-weight:850; letter-spacing:-.04em; text-decoration:none; font-size:1.22rem; }
+    .brand img { width:38px; height:34px; object-fit:contain; }
+    .brand span span { color:var(--gold); }
+    .nav { display:flex; align-items:center; gap:1rem; }
+    .nav a,.nav button { color:#fff; text-decoration:none; border:0; background:transparent; cursor:pointer; font-weight:650; }
+    .nav .nav-link { color:var(--navy); background:#fff; padding:.7rem 1rem; border-radius:999px; }
+    .hero { color:#fff; background:radial-gradient(ellipse at 80% 0%,#263b63 0%,transparent 40%),var(--navy); padding:2.7rem 1rem 4.2rem; }
+    .hero__inner { width:min(1120px,100%); margin:auto; }
+    .eyebrow { color:var(--gold); font-size:.77rem; letter-spacing:.13em; font-weight:800; text-transform:uppercase; }
+    h1 { margin:.6rem 0 .5rem; font-size:clamp(2rem,5vw,3.35rem); letter-spacing:-.055em; }
+    .hero p { max-width:42rem; margin:0; color:#c8d1e1; line-height:1.6; }
+    main { width:min(1120px,calc(100% - 2rem)); margin:-2.2rem auto 4rem; position:relative; }
+    .profile-card,.trip-panel { background:#fff; border:1px solid var(--line); border-radius:1.25rem; box-shadow:var(--shadow); }
+    .profile-card { display:grid; grid-template-columns:auto 1fr; gap:1rem 1.2rem; padding:1.25rem; align-items:center; margin-bottom:1.35rem; }
+    .avatar { width:3.8rem; height:3.8rem; display:grid; place-items:center; border-radius:50%; background:#fff1bf; color:var(--navy); font-size:1.35rem; font-weight:850; }
+    .profile-summary { min-width:0; }
+    .profile-summary h2 { margin:0 0 .25rem; font-size:1.1rem; }
+    .profile-summary p { margin:0; color:var(--muted); font-size:.92rem; line-height:1.45; }
+    .profile-edit { grid-column:1/-1; }
+    .profile-form { border-top:1px solid var(--line); padding-top:1rem; display:grid; grid-template-columns:1fr 2fr auto; align-items:end; gap:.8rem; }
+    .field label { display:block; margin:0 0 .35rem; color:var(--muted); font-size:.82rem; font-weight:750; }
+    .field input,.field textarea { width:100%; padding:.78rem .85rem; border:1px solid #d9dfeb; border-radius:.7rem; background:#fff; color:var(--ink); }
+    .field textarea { min-height:2.9rem; resize:vertical; }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; min-height:2.75rem; border:1px solid transparent; border-radius:.75rem; padding:.7rem 1rem; color:#fff; background:var(--navy); font-weight:750; cursor:pointer; text-decoration:none; transition:transform .15s ease,background .15s ease; }
+    .button:hover { background:var(--navy-2); transform:translateY(-1px); }
+    .button--gold { background:var(--gold); color:var(--navy); }
+    .button--gold:hover { background:#ffda5d; }
+    .button--soft { color:var(--navy); background:#f4f6fa; border-color:var(--line); }
+    .button--soft:hover { background:#e9eef6; }
+    .button--danger { background:#fff1ef; color:#a83429; border-color:#ffd6d1; }
+    .button:disabled { opacity:.58; cursor:wait; transform:none; }
+    .trip-panel { padding:clamp(1rem,3vw,1.7rem); }
+    .panel-head { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .panel-head h2 { margin:0; font-size:1.45rem; letter-spacing:-.03em; }
+    .panel-head p { margin:.35rem 0 0; color:var(--muted); }
+    .filters { display:flex; flex-wrap:wrap; gap:.45rem; margin:1.2rem 0; padding-bottom:1rem; border-bottom:1px solid var(--line); }
+    .filter { border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:999px; padding:.62rem .95rem; font-weight:750; cursor:pointer; }
+    .filter[aria-pressed="true"] { color:var(--navy); background:#fff5cf; border-color:#f5d76c; }
+    .trip-list { display:grid; gap:.85rem; }
+    .trip-card { border:1px solid var(--line); border-radius:1rem; padding:1rem; background:linear-gradient(130deg,#fff,#fbfcff); }
+    .trip-card__head { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+    .role-tag,.state-tag { display:inline-flex; align-items:center; gap:.35rem; border-radius:999px; padding:.38rem .68rem; background:#eff3f9; font-size:.78rem; font-weight:800; }
+    .role-tag--driver { background:#fff2c4; color:#694f00; }
+    .role-tag--rider { background:#e8f5ff; color:#145580; }
+    .state-tag--pending { background:#fff3d7; color:#815700; }
+    .state-tag--accepted,.state-tag--started { background:#e5f7ed; color:#146840; }
+    .state-tag--declined { background:#fff0ef; color:#a83429; }
+    .trip-route { margin:.95rem 0 .4rem; font-size:1.18rem; font-weight:850; letter-spacing:-.025em; }
+    .trip-date,.trip-info { color:var(--muted); font-size:.92rem; line-height:1.55; }
+    .trip-info { display:flex; flex-wrap:wrap; gap:.5rem 1rem; margin-top:.65rem; }
+    .requests { margin-top:1rem; border-top:1px solid var(--line); padding-top:.8rem; }
+    .requests h3 { margin:0 0 .6rem; font-size:.95rem; }
+    .request-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:.65rem 0; border-top:1px solid #f0f2f6; }
+    .request-row:first-of-type { border-top:0; }
+    .request-actions { display:flex; flex-wrap:wrap; gap:.45rem; }
+    .request-actions .button { min-height:2.35rem; padding:.5rem .75rem; font-size:.85rem; }
+    .trip-card__actions { display:flex; align-items:center; flex-wrap:wrap; gap:.55rem; margin-top:1rem; }
+    .empty-state { padding:2.5rem 1rem; text-align:center; color:var(--muted); }
+    .empty-state__icon { font-size:2rem; }
+    .empty-state h3 { margin:.65rem 0 .35rem; color:var(--ink); }
+    .empty-state p { margin:.35rem auto 1rem; max-width:27rem; line-height:1.55; }
+    .notice { margin:.85rem 0; padding:.8rem 1rem; border-radius:.75rem; color:#29405f; background:#edf4ff; }
+    .notice[data-kind="error"] { color:#842d27; background:#fff0ee; }
+    .footer { width:min(1120px,calc(100% - 2rem)); margin:0 auto 2rem; color:var(--muted); font-size:.86rem; text-align:center; }
+    @media (max-width:700px) {
+      .topbar__inner { min-height:66px; }
+      .nav { gap:.65rem; }
+      .nav a:first-child { display:none; }
+      .hero { padding:2.1rem 1rem 3.8rem; }
+      .profile-card { grid-template-columns:auto 1fr; }
+      .profile-form { grid-template-columns:1fr; }
+      .profile-form .button { justify-self:start; }
+      .trip-card__head { align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="index.html"><img src="logo-mark.png" alt=""><span>Travel<span>Duckling</span></span></a>
+      <nav class="nav" aria-label="Account navigation">
+        <a href="index.html">Find a ride</a>
+        <button id="sign-out" type="button">Sign out</button>
+        <a class="nav-link" href="index.html#offer">Offer a ride</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero__inner">
+      <div class="eyebrow">Your TravelDuckling</div>
+      <h1>Your trips, all in one place.</h1>
+      <p>Keep an eye on the rides you’re driving, the seats you’ve requested, and what’s coming up next.</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="profile-card" aria-labelledby="profile-heading">
+      <div class="avatar" id="profile-avatar" aria-hidden="true">T</div>
+      <div class="profile-summary">
+        <h2 id="profile-heading">Your driver profile</h2>
+        <p id="profile-summary-text">A friendly introduction helps riders know who they’ll be traveling with.</p>
+      </div>
+      <div class="profile-edit">
+        <div class="notice" id="page-notice" role="status" aria-live="polite" hidden></div>
+        <form class="profile-form" id="profile-form">
+          <div class="field"><label for="first-name">First name</label><input id="first-name" name="first_name" maxlength="80" required autocomplete="given-name"></div>
+          <div class="field"><label for="about">A few words about you</label><textarea id="about" name="about" maxlength="400" placeholder="Your travel style, favorite road trip playlist, or anything you'd like riders to know."></textarea></div>
+          <button class="button button--soft" id="save-profile" type="submit">Save profile</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="trip-panel" aria-labelledby="trips-heading">
+      <div class="panel-head">
+        <div><h2 id="trips-heading">Your trips</h2><p>As a driver or a rider.</p></div>
+        <a class="button button--gold" href="index.html#offer">＋ Offer a ride</a>
+      </div>
+      <div class="filters" role="group" aria-label="Filter trips">
+        <button class="filter" type="button" data-period="upcoming" aria-pressed="true">Upcoming</button>
+        <button class="filter" type="button" data-period="past" aria-pressed="false">Past</button>
+        <span aria-hidden="true" style="width:1px;background:var(--line);margin:.15rem .25rem"></span>
+        <button class="filter" type="button" data-role="all" aria-pressed="true">All roles</button>
+        <button class="filter" type="button" data-role="driver" aria-pressed="false">🚗 Driver</button>
+        <button class="filter" type="button" data-role="rider" aria-pressed="false">🧍 Rider</button>
+      </div>
+      <div class="trip-list" id="trip-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer">TravelDuckling · A better way to share the journey.</footer>
+
+  <script type="module">
+    import { auth, onAuthStateChanged, signOut } from "./firebase-auth.js";
+
+    const API = ["localhost", "127.0.0.1"].includes(location.hostname)
+      ? "http://127.0.0.1:8000"
+      : "https://travelduckling-api-656145342063.us-west1.run.app";
+    const tripList = document.getElementById("trip-list");
+    const notice = document.getElementById("page-notice");
+    let trips = { driver_trips: [], rider_trips: [] };
+    let period = "upcoming";
+    let role = "all";
+    let currentUser = null;
+
+    const make = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const displayDate = (value) => new Date(value).toLocaleString(undefined, {
+      weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit"
+    });
+    const setNotice = (message, kind) => {
+      notice.hidden = !message;
+      notice.textContent = message || "";
+      notice.dataset.kind = kind || "info";
+    };
+
+    async function api(path, options = {}) {
+      const token = await currentUser.getIdToken();
+      const response = await fetch(API + path, {
+        ...options,
+        headers: { ...(options.body ? { "Content-Type": "application/json" } : {}), Authorization: "Bearer " + token, ...(options.headers || {}) }
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.detail || "We couldn’t complete that request. Please try again.");
+      return body;
+    }
+
+    function createAction(label, className, callback) {
+      const button = make("button", "button " + (className || ""), label);
+      button.type = "button";
+      button.addEventListener("click", callback);
+      return button;
+    }
+
+    function renderRequest(request, rideId) {
+      const row = make("div", "request-row");
+      const left = make("div");
+      left.append(
+        make("strong", "", request.rider_name || "Traveler"),
+        make("span", "trip-date", " · " + request.seats_requested + (request.seats_requested === 1 ? " seat" : " seats") + " · " + request.status)
+      );
+      row.appendChild(left);
+      if (request.status === "pending") {
+        const actions = make("div", "request-actions");
+        const decide = async (decision, button) => {
+          button.disabled = true;
+          try {
+            await api(`/api/v1/rides/${encodeURIComponent(rideId)}/requests/${encodeURIComponent(request.id)}`, {
+              method: "PATCH", body: JSON.stringify({ decision })
+            });
+            setNotice(decision === "accept" ? "You accepted the rider. The remaining seats have been updated." : "You declined the request.");
+            await loadTrips();
+          } catch (error) {
+            button.disabled = false;
+            setNotice(error.message, "error");
+          }
+        };
+        actions.append(
+          createAction("Accept", "button--gold", function () { decide("accept", this); }),
+          createAction("Decline", "button--danger", function () { decide("decline", this); })
+        );
+        row.appendChild(actions);
+      }
+      return row;
+    }
+
+    function renderTrip(entry) {
+      const ride = entry.ride;
+      const card = make("article", "trip-card");
+      const head = make("div", "trip-card__head");
+      const roleTag = make("span", "role-tag " + (entry.role === "driver" ? "role-tag--driver" : "role-tag--rider"), entry.role === "driver" ? "🚗  You’re driving" : "🧍  You’re riding");
+      const statusName = entry.role === "rider" ? (entry.request?.status || entry.status) : entry.status;
+      const stateTag = make("span", "state-tag state-tag--" + String(statusName).toLowerCase(), statusName === "scheduled" ? "Confirmed trip" : statusName.charAt(0).toUpperCase() + statusName.slice(1));
+      head.append(roleTag, stateTag);
+      card.appendChild(head);
+      card.appendChild(make("h3", "trip-route", ride.origin + "  →  " + ride.destination));
+      card.appendChild(make("div", "trip-date", displayDate(ride.departure_at)));
+      const accepted = (entry.requests || []).filter((item) => item.status === "accepted").length;
+      const pending = (entry.requests || []).filter((item) => item.status === "pending").length;
+      const info = make("div", "trip-info");
+      if (entry.role === "driver") {
+        info.append(make("span", "", ride.available_seats + " seat(s) still open"), make("span", "", accepted + " rider(s) accepted"));
+        if (pending) info.appendChild(make("span", "", pending + " request(s) waiting"));
+      } else {
+        info.append(make("span", "", "Driver: " + (ride.driver?.first_name || "TravelDuckling driver")), make("span", "", (entry.request?.seats_requested || 1) + " seat(s) requested"));
+      }
+      card.appendChild(info);
+
+      if (entry.role === "driver" && (entry.requests || []).length) {
+        const requestPanel = make("section", "requests");
+        requestPanel.appendChild(make("h3", "", "Rider requests"));
+        entry.requests.forEach((request) => requestPanel.appendChild(renderRequest(request, ride.id)));
+        card.appendChild(requestPanel);
+      }
+
+      if (entry.role === "driver" && ride.status === "scheduled") {
+        const actions = make("div", "trip-card__actions");
+        const untilDeparture = new Date(ride.departure_at).getTime() - Date.now();
+        if (untilDeparture <= 2 * 60 * 60 * 1000) {
+          const start = createAction("▶  Start trip", "button--gold", async function () {
+            start.disabled = true;
+            try {
+              await api(`/api/v1/rides/${encodeURIComponent(ride.id)}/start`, { method: "POST" });
+              setNotice("Trip started. Have a safe journey!");
+              await loadTrips();
+            } catch (error) {
+              start.disabled = false;
+              setNotice(error.message, "error");
+            }
+          });
+          actions.appendChild(start);
+        } else {
+          const hours = Math.ceil(untilDeparture / 3600000);
+          actions.appendChild(make("span", "trip-date", "Start trip becomes available within 2 hours of departure · about " + hours + "h to go"));
+        }
+        card.appendChild(actions);
+      }
+      return card;
+    }
+
+    function renderTrips() {
+      tripList.replaceChildren();
+      const now = Date.now();
+      const all = [
+        ...trips.driver_trips,
+        ...trips.rider_trips
+      ].filter((entry) => (role === "all" || entry.role === role) &&
+        (period === "upcoming" ? new Date(entry.ride.departure_at).getTime() >= now : new Date(entry.ride.departure_at).getTime() < now));
+      all.sort((a, b) => new Date(a.ride.departure_at) - new Date(b.ride.departure_at));
+      if (period === "past") all.reverse();
+      if (!all.length) {
+        const empty = make("div", "empty-state");
+        empty.append(make("div", "empty-state__icon", period === "upcoming" ? "🧭" : "🌅"),
+          make("h3", "", period === "upcoming" ? "Your next trip starts here" : "No past trips yet"),
+          make("p", "", period === "upcoming" ? "Offer a ride or find one to see it here. Driver trips and rider requests live together in this space." : "After a trip’s departure time has passed, it will move here."));
+        if (period === "upcoming") {
+          const link = make("a", "button button--gold", "Find or offer a ride");
+          link.href = "index.html#offer";
+          empty.appendChild(link);
+        }
+        tripList.appendChild(empty);
+        return;
+      }
+      all.forEach((entry) => tripList.appendChild(renderTrip(entry)));
+    }
+
+    async function loadTrips() {
+      tripList.replaceChildren(make("div", "notice", "Loading your trips…"));
+      try {
+        trips = await api("/api/v1/me/trips");
+        renderTrips();
+      } catch (error) {
+        const isNoTrips = false;
+        tripList.replaceChildren(make("div", "notice", error.message));
+        if (isNoTrips) renderTrips();
+      }
+    }
+
+    async function loadProfile() {
+      try {
+        const profile = await api("/api/v1/me/profile");
+        document.getElementById("first-name").value = profile.first_name || "";
+        document.getElementById("about").value = profile.about || "";
+        document.getElementById("profile-avatar").textContent = (profile.first_name || "T").charAt(0).toUpperCase();
+        document.getElementById("profile-heading").textContent = profile.first_name || "Your driver profile";
+        document.getElementById("profile-summary-text").textContent = profile.about || "A friendly introduction helps riders know who they’ll be traveling with.";
+      } catch (error) { setNotice(error.message, "error"); }
+    }
+
+    document.getElementById("profile-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = document.getElementById("save-profile");
+      button.disabled = true;
+      try {
+        const profile = await api("/api/v1/me/profile", {
+          method: "PUT",
+          body: JSON.stringify({ first_name: document.getElementById("first-name").value, about: document.getElementById("about").value })
+        });
+        document.getElementById("profile-avatar").textContent = profile.first_name.charAt(0).toUpperCase();
+        document.getElementById("profile-heading").textContent = profile.first_name;
+        document.getElementById("profile-summary-text").textContent = profile.about || "A friendly introduction helps riders know who they’ll be traveling with.";
+        setNotice("Your profile is saved.");
+      } catch (error) { setNotice(error.message, "error"); }
+      finally { button.disabled = false; }
+    });
+
+    document.querySelectorAll("[data-period]").forEach((button) => button.addEventListener("click", () => {
+      period = button.dataset.period;
+      document.querySelectorAll("[data-period]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      renderTrips();
+    }));
+    document.querySelectorAll("[data-role]").forEach((button) => button.addEventListener("click", () => {
+      role = button.dataset.role;
+      document.querySelectorAll("[data-role]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      renderTrips();
+    }));
+    document.getElementById("sign-out").addEventListener("click", () => signOut(auth).then(() => { location.href = "index.html"; }));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.replace("login.html?next=my-trips.html");
+        return;
+      }
+      currentUser = user;
+      await Promise.all([loadProfile(), loadTrips()]);
+    });
+  </script>
+</body>
+</html>

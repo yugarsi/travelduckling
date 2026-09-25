@@ -207,9 +207,10 @@
   }
 
   .site-nav .nav-cta:hover { background: #fff; }
+  .site-nav a[hidden], .publish-success[hidden] { display: none; }
 
   @media (max-width: 860px) {
-    .site-nav a:not(.nav-cta) { display: none; }
+    .site-nav a:not(.nav-cta):not(.nav-my-trips) { display: none; }
   }
 
   /* ---------------------------------------------------------------------
@@ -456,6 +457,31 @@
   .ride-result { padding: 0.9rem 1rem; border: 1px solid rgba(255,255,255,.24); border-radius: var(--radius-md); background: rgba(255,255,255,.96); color: var(--ink-900); box-shadow: var(--shadow-md); }
   .ride-result strong { display: block; margin-bottom: 0.25rem; }
   .ride-result span { color: var(--ink-700); font-size: 0.9rem; }
+
+  .ride-result__top, .ride-result__actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .ride-result__driver { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.85rem; }
+  .driver-avatar { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #fff0b8; color: var(--ink-900); font-weight: 800; }
+  .ride-result__driver button { padding: 0; border: 0; background: transparent; color: var(--ink-900); text-align: left; cursor: pointer; }
+  .ride-result__driver small { display: block; color: var(--ink-700); }
+  .ride-result__actions { justify-content: flex-start; margin-top: 0.9rem; }
+  .ride-action { border: 0; border-radius: 999px; padding: 0.65rem 1rem; background: var(--ink-900); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .ride-action--quiet { border: 1px solid #d8deea; background: #fff; color: var(--ink-900); }
+  .ride-action:disabled { opacity: .6; cursor: wait; }
+  .publish-success { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1rem; padding: 1rem 1.1rem; border: 1px solid rgba(255,255,255,.28); border-radius: 1rem; background: #f3fff6; color: #123b2a; box-shadow: var(--shadow-md); }
+  .publish-success__icon { display: grid; place-items: center; flex: 0 0 2.5rem; height: 2.5rem; border-radius: 50%; background: #d8f7df; font-size: 1.3rem; }
+  .publish-success__copy { flex: 1 1 13rem; }
+  .publish-success__copy strong { display: block; margin-bottom: .2rem; }
+  .publish-success__copy span { color: #3c6852; font-size: .92rem; }
+  .publish-success a { display: inline-flex; align-items: center; justify-content: center; min-height: 2.7rem; padding: .65rem 1rem; border-radius: 999px; background: var(--ink-900); color: #fff; font-weight: 700; text-decoration: none; }
+  .driver-dialog { width: min(28rem, calc(100% - 2rem)); border: 0; border-radius: 1.25rem; padding: 1.5rem; color: var(--ink-900); box-shadow: 0 1.5rem 5rem rgba(0,0,0,.3); }
+  .driver-dialog::backdrop { background: rgba(4,10,23,.66); backdrop-filter: blur(4px); }
+  .driver-dialog__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .driver-dialog__avatar { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: #fff0b8; font-size: 1.6rem; font-weight: 800; }
+  .driver-dialog__close { border: 0; background: transparent; font-size: 1.6rem; cursor: pointer; color: var(--ink-700); }
+  .driver-dialog h2 { margin: 1rem 0 .25rem; }
+  .driver-dialog p { color: var(--ink-700); line-height: 1.55; }
+  .driver-stats { display: flex; gap: .6rem; margin: 1rem 0; }
+  .driver-stats span { padding: .55rem .75rem; border-radius: .7rem; background: #f1f4f9; color: var(--ink-900); font-size: .9rem; }
 
   .search__status {
     margin: 0.7rem 0 0;
@@ -1129,6 +1155,7 @@
         <a href="#group-trips">Group trips</a>
         <a href="#offer">Offer a ride</a>
         <a href="#help">Help</a>
+        <a class="nav-my-trips" id="my-trips-link" href="my-trips.html" hidden>My trips</a>
         <a class="nav-cta" href="login.html">Log in</a>
       </nav>
     </header>
@@ -1240,6 +1267,11 @@
           </form>
 
           <p class="search__status" id="search-status" role="status" aria-live="polite"></p>
+          <section class="publish-success" id="publish-success" role="status" aria-live="polite" hidden>
+            <span class="publish-success__icon" aria-hidden="true">✓</span>
+            <span class="publish-success__copy"><strong>Your ride is live</strong><span>It’s now listed for travelers heading your way.</span></span>
+            <a href="my-trips.html">View your trips</a>
+          </section>
           <div class="ride-results" id="ride-results" aria-live="polite"></div>
           <p class="search__aside">
             Travelling with other people? <a href="#group-trips">Browse group trips &amp; activities →</a>
@@ -1488,6 +1520,16 @@
       </section>
     </main>
 
+    <dialog class="driver-dialog" id="driver-profile-dialog" aria-labelledby="driver-profile-name">
+      <div class="driver-dialog__head">
+        <span class="driver-dialog__avatar" id="driver-profile-avatar" aria-hidden="true">T</span>
+        <button class="driver-dialog__close" id="driver-profile-close" type="button" aria-label="Close driver profile">×</button>
+      </div>
+      <h2 id="driver-profile-name">Driver profile</h2>
+      <div class="driver-stats"><span id="driver-profile-rides">0 rides</span><span id="driver-profile-rating">★ 0.0</span></div>
+      <p id="driver-profile-about">This driver is new to TravelDuckling.</p>
+    </dialog>
+
     <footer class="site-footer">
       <span class="site-footer__legal">© <span id="year">2026</span> TravelDuckling</span>
       <a href="#privacy">Privacy</a>
@@ -1587,7 +1629,7 @@
 
     var API_BASE_URL = ["localhost", "127.0.0.1"].includes(window.location.hostname)
       ? "http://127.0.0.1:8000"
-      : "https://travelduckling-api-kvoulafwoa-uw.a.run.app";
+      : "https://travelduckling-api-656145342063.us-west1.run.app";
     var form    = document.getElementById("search-form");
     var fromEl  = document.getElementById("from");
     var toEl    = document.getElementById("to");
@@ -1600,17 +1642,22 @@
     var timeEl = document.getElementById("departure-time");
     var results = document.getElementById("ride-results");
     var status  = document.getElementById("search-status");
+    var publishSuccess = document.getElementById("publish-success");
     var label   = document.getElementById("submit-label");
     var tabs    = Array.prototype.slice.call(document.querySelectorAll(".search__tab"));
+    var myTripsLink = document.getElementById("my-trips-link");
+    var profileDialog = document.getElementById("driver-profile-dialog");
 
     document.getElementById("year").textContent = String(new Date().getFullYear());
     var accountLink = document.querySelector(".site-nav .nav-cta");
     onAuthStateChanged(auth, function (user) {
       if (!user) {
+        myTripsLink.hidden = true;
         accountLink.textContent = "Log in";
         accountLink.href = "login.html?next=index.html";
         return;
       }
+      myTripsLink.hidden = false;
       accountLink.textContent = "Sign out";
       accountLink.href = "#sign-out";
     });
@@ -1648,6 +1695,7 @@
       tab.addEventListener("click", function () {
         tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t === tab)); });
         status.textContent = "";
+        publishSuccess.hidden = true;
         results.replaceChildren();
         updateFields();
       });
@@ -1673,6 +1721,7 @@
       var offering = isOffering();
       var user = auth.currentUser;
       results.replaceChildren();
+      publishSuccess.hidden = true;
       if (!user) {
         status.innerHTML = 'Please <a href="login.html?next=index.html">log in</a> to use ride search and publishing.';
         return;
@@ -1733,7 +1782,9 @@
               throw new Error(body.detail || "The ride request failed. Please try again.");
             }
             if (offering) {
-              status.textContent = "Ride published. Ride ID: " + body.id;
+              status.textContent = "";
+              publishSuccess.hidden = false;
+              publishSuccess.scrollIntoView({ behavior: "smooth", block: "nearest" });
               return;
             }
             status.textContent = body.count === 1 ? "1 ride found." : body.count + " rides found.";
@@ -1744,7 +1795,76 @@
               title.textContent = ride.origin + " → " + ride.destination;
               var detail = document.createElement("span");
               detail.textContent = new Date(ride.departure_at).toLocaleString() + " · " + ride.available_seats + " seat(s)";
-              card.append(title, detail);
+              var top = document.createElement("div");
+              top.className = "ride-result__top";
+              top.append(title, detail);
+              card.appendChild(top);
+
+              var driverRow = document.createElement("div");
+              driverRow.className = "ride-result__driver";
+              var avatar = document.createElement("span");
+              avatar.className = "driver-avatar";
+              avatar.textContent = (ride.driver && ride.driver.first_name ? ride.driver.first_name.charAt(0) : "T").toUpperCase();
+              avatar.setAttribute("aria-hidden", "true");
+              var profileButton = document.createElement("button");
+              profileButton.type = "button";
+              var driverName = document.createElement("strong");
+              driverName.textContent = ride.driver && ride.driver.first_name ? ride.driver.first_name : "TravelDuckling driver";
+              var driverMeta = document.createElement("small");
+              driverMeta.textContent = (ride.driver ? ride.driver.rides_count : 0) + " rides · ★ " + Number(ride.driver ? ride.driver.rating : 0).toFixed(1);
+              profileButton.append(driverName, driverMeta);
+              profileButton.addEventListener("click", function () {
+                document.getElementById("driver-profile-avatar").textContent = avatar.textContent;
+                document.getElementById("driver-profile-name").textContent = driverName.textContent;
+                document.getElementById("driver-profile-rides").textContent = (ride.driver ? ride.driver.rides_count : 0) + " rides";
+                document.getElementById("driver-profile-rating").textContent = "★ " + Number(ride.driver ? ride.driver.rating : 0).toFixed(1);
+                document.getElementById("driver-profile-about").textContent = ride.driver && ride.driver.about
+                  ? ride.driver.about
+                  : "This driver is new to TravelDuckling and hasn’t added an introduction yet.";
+                profileDialog.showModal();
+              });
+              driverRow.append(avatar, profileButton);
+              card.appendChild(driverRow);
+
+              var actions = document.createElement("div");
+              actions.className = "ride-result__actions";
+              if (ride.viewer_is_driver) {
+                var ownRide = document.createElement("span");
+                ownRide.textContent = "Your ride";
+                actions.appendChild(ownRide);
+              } else {
+                var requestButton = document.createElement("button");
+                requestButton.className = "ride-action";
+                requestButton.type = "button";
+                requestButton.textContent = "Request to join";
+                requestButton.addEventListener("click", function () {
+                  requestButton.disabled = true;
+                  user.getIdToken().then(function (token) {
+                    return fetch(API_BASE_URL + "/api/v1/rides/" + encodeURIComponent(ride.id) + "/requests", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+                      body: JSON.stringify({ seats_requested: Number(seatsEl.value) })
+                    });
+                  }).then(function (response) {
+                    return response.json().catch(function () { return {}; }).then(function (body) {
+                      if (!response.ok) throw new Error(body.detail || "Could not send your request. Please try again.");
+                      requestButton.textContent = "Request sent";
+                      requestButton.classList.add("ride-action--quiet");
+                      status.textContent = "Your request was sent to the driver. You can follow it in My trips.";
+                    });
+                  }).catch(function (error) {
+                    status.textContent = error.message || "Could not send your request. Please try again.";
+                  }).finally(function () { requestButton.disabled = false; });
+                });
+                actions.appendChild(requestButton);
+              }
+              var myTripsButton = document.createElement("a");
+              myTripsButton.className = "ride-action ride-action--quiet";
+              myTripsButton.href = "my-trips.html";
+              myTripsButton.textContent = "My trips";
+              myTripsButton.style.textDecoration = "none";
+              actions.appendChild(myTripsButton);
+              card.appendChild(actions);
               results.appendChild(card);
             });
           });
@@ -1756,6 +1876,10 @@
       });
     });
   })();
+
+  document.getElementById("driver-profile-close").addEventListener("click", function () {
+    document.getElementById("driver-profile-dialog").close();
+  });
 
   /* --------------------------------------------------------------------
      Group trips & activities — browse, filter, and create.
