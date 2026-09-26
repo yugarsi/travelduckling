@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101a30"><title>Plan a journey — TravelDuckling</title><link rel="icon" href="../assets/images/logo-mark.png"><link rel="stylesheet" href="../assets/css/journeys.css"></head>
+<body>
+<header><a class="brand" href="../index.html"><img src="../assets/images/logo-mark.png" alt="">Travel<span>Duckling</span></a><nav aria-label="Main"><a href="../index.html">Home</a><a href="my-trips.html">My trips & profile</a><button id="logout" hidden>Sign out</button><a id="login" href="login.html?next=journeys.html">Log in</a></nav></header>
+<main>
+<section class="intro"><p class="eyebrow">GOING THE SAME WAY</p><h1>A shared journey starts here.</h1><p>Offer your spare seats or tell drivers where you want to go. One way, or there and back.</p></section>
+<p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+<div class="layout">
+<section class="panel" aria-labelledby="plan-heading"><h2 id="plan-heading">Plan your journey</h2>
+<form id="journey-form">
+<fieldset class="choices"><legend>For this journey, I’m…</legend><label><input type="radio" name="role" value="driver" checked> 🚗 Offering seats</label><label><input type="radio" name="role" value="rider"> 🎒 Looking for seats</label></fieldset>
+<label class="field">Journey type<select id="trip-type"><option value="oneway">One way</option><option value="roundtrip">Round trip</option></select></label>
+<div class="grid">
+<label class="field">Leaving from<span class="address-autocomplete"><input id="origin" required autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="origin-suggestions" placeholder="Choose an address or meeting point"><span id="origin-suggestions" class="address-suggestions" role="listbox" hidden></span><span class="address-selected-attribution" hidden><img src="https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white3.png" alt="Powered by Google"></span><span class="address-status" role="status"></span></span></label>
+<label class="field">Going to<span class="address-autocomplete"><input id="destination" required autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="destination-suggestions" placeholder="Choose an address or trailhead"><span id="destination-suggestions" class="address-suggestions" role="listbox" hidden></span><span class="address-selected-attribution" hidden><img src="https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white3.png" alt="Powered by Google"></span><span class="address-status" role="status"></span></span></label>
+</div>
+<p class="hint">Choose suggestions for accurate route matching. Prefer public meeting points; your selected locations are shared with compatible members.</p>
+<fieldset><legend>Outbound departure window</legend><div class="grid"><label class="field">Earliest departure<input id="earliest" type="datetime-local" required></label><label class="field">Latest departure<input id="latest" type="datetime-local" required></label></div><label class="field">Seats <input id="seats" type="number" min="1" max="8" value="1" required></label></fieldset>
+<fieldset id="return-fields" hidden disabled><legend>Return departure window</legend><p class="hint">The route reverses automatically. Leave enough time for the drive and your activity.</p><div class="grid"><label class="field">Earliest return<input id="return-earliest" type="datetime-local" required></label><label class="field">Latest return<input id="return-latest" type="datetime-local" required></label></div><label class="field">Return seats<input id="return-seats" type="number" min="1" max="8" value="1" required></label><label id="one-way-option"><input id="allow-one-way" type="checkbox"> Allow people to book just one direction</label></fieldset>
+<label id="detour-field" class="field">Maximum extra time per direction (minutes)<input id="detour" type="number" min="0" max="60" value="15"><span class="hint">Includes additional driving, waiting and pickup/drop-off stops.</span></label>
+<label class="field">Travel preferences<textarea id="preferences" maxlength="400" placeholder="Quiet ride, luggage space, pets by agreement…"></textarea></label>
+<label class="field">Activity together? Optional<input id="activity" maxlength="120" placeholder="For example: hiking Mount Si together"><span class="hint">Leave blank if you are only sharing transport. A return seat does not include an organised activity.</span></label>
+<p class="hint">Times use your device’s timezone: <strong id="timezone"></strong>. This publishes a travel plan; seats are confirmed only after acceptance. No payment is collected.</p>
+<button class="primary" id="publish">Publish journey</button>
+</form></section>
+<section class="panel" aria-labelledby="your-heading"><div class="section-heading"><h2 id="your-heading">Your journeys</h2><button id="refresh" type="button">Refresh</button></div><p class="hint">Review requests and invitations, find compatible people, and manage each direction.</p><label class="field">Show<select id="period"><option value="upcoming">Upcoming & active</option><option value="past">Past & closed</option><option value="all">All journeys</option></select></label><div id="journey-list"><p>Log in to publish and manage your journeys.</p></div><p><a href="my-trips.html">View earlier rides and edit your profile →</a></p></section>
+</div>
+<section id="matches-panel" class="panel" hidden tabindex="-1" aria-labelledby="matches-heading"><h2 id="matches-heading">Compatible journeys</h2><p id="match-notice" class="hint"></p><div id="matches"></div></section>
+</main><script type="module" src="../assets/js/journeys/page.js"></script>
+</body></html>

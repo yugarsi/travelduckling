@@ -22,3 +22,9 @@ For local development, serve these files from an HTTP server (ES modules do not 
 This remains a static, framework-free site. Native browser ES modules keep the GitHub Pages deployment simple while dividing behavior by feature. Page markup stays in the HTML files; styles and scripts are under `assets/`. Firebase authentication is shared through `firebase-auth.js`, and the API base URL is shared through `assets/js/config.js`. See [the frontend architecture note](docs/architecture.md).
 
 The root `index.html` stays in place as the GitHub Pages entry page. Secondary HTML pages are in `pages/`, and brand/background artwork is in `assets/images/`.
+
+## Journey workspace
+
+Open `pages/journeys.html` to publish a driver offer or rider request. One way is the default; round trips link two legs and can be restricted to both-direction bookings. Frontend modules live in `assets/js/journeys/` (API, form, rendering, controller), with responsive styling in `assets/css/journeys.css`. The workspace uses the existing Firebase authentication and profile API.
+
+Matching requires the new backend journey endpoints and a server-only Google Routes key. Earlier rides remain in the original My Trips view. No payment or reward points are collected by this flow.

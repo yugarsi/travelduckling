@@ -171,7 +171,12 @@ import { attachAddressAutocomplete, readPlaceId, swapPlaceSelections, useCurrent
 
     // Tabs switch the intent of the same form rather than swapping markup.
     tabs.forEach(function (tab) {
-      tab.addEventListener("click", function () {
+      tab.addEventListener("click", function (event) {
+        if (tab.id === "tab-offer") {
+          event.preventDefault();
+          window.location.assign("pages/journeys.html");
+          return;
+        }
         tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t === tab)); });
         status.textContent = "";
         publishSuccess.hidden = true;
