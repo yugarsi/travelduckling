@@ -1,0 +1,41 @@
+:root { color-scheme: light; --yellow: #ffcc33; --ink: #0d1526; --muted: #64748b; --shell: min(1120px, 100% - 2.5rem); }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body { margin: 0; min-height: 100vh; font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--ink); background: #0b1220; -webkit-font-smoothing: antialiased; }
+  button, input { font: inherit; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+  .backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #0b1220; }
+  .backdrop__photo { position: absolute; inset: -4%; background: url("../images/image_background.webp") center / cover no-repeat; filter: saturate(.86); }
+  .backdrop__scrim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(11,18,32,.28), rgba(11,18,32,.76) 76%), linear-gradient(180deg, rgba(11,18,32,.45), rgba(11,18,32,.66)); }
+  .site-header { width: var(--shell); margin-inline: auto; padding-block: 1.25rem; display: flex; align-items: center; }
+  .brand { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; color: #fff; }
+  .brand img { height: 46px; width: auto; filter: drop-shadow(0 6px 12px rgba(0,0,0,.35)); }
+  .brand__name { font-size: 1.2rem; font-weight: 700; letter-spacing: -.02em; }
+  .brand__name span { color: var(--yellow); }
+  .back-link { margin-left: auto; padding: .55rem .85rem; border-radius: 999px; color: rgba(255,255,255,.9); text-decoration: none; font-size: .92rem; }
+  .back-link:hover { background: rgba(255,255,255,.12); }
+  main { min-height: calc(100vh - 78px); display: grid; place-items: center; padding: 1.25rem 1.25rem 3rem; }
+  .signup-card { width: min(100%, 520px); padding: clamp(1.5rem, 5vw, 2.45rem); border: 1px solid rgba(255,255,255,.64); border-radius: 24px; background: rgba(255,255,255,.97); box-shadow: 0 24px 70px rgba(0,0,0,.34); }
+  .eyebrow { display: inline-flex; align-items: center; gap: .45rem; margin: 0 0 .8rem; color: #8a6410; font-size: .78rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+  .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 0 4px rgba(255,204,51,.2); }
+  h1 { margin: 0; font-size: clamp(2rem, 7vw, 2.5rem); line-height: 1.08; letter-spacing: -.045em; }
+  .intro { margin: .7rem 0 1.3rem; color: var(--muted); line-height: 1.55; }
+  .field { display: grid; gap: .45rem; margin-top: .95rem; }
+  .field label { font-size: .9rem; font-weight: 650; }
+  .field input { width: 100%; min-height: 3rem; border: 1px solid #d5dce6; border-radius: 11px; padding: .7rem .9rem; background: #fff; color: var(--ink); }
+  .field input::placeholder { color: #94a0b2; }
+  .field input:focus { outline: 3px solid rgba(255,204,51,.38); border-color: #d99a10; }
+  .verify-note { display: grid; grid-template-columns: 2rem 1fr; gap: .8rem; margin: 1.3rem 0 1.1rem; padding: .95rem 1rem; border: 1px solid #f0d98e; border-radius: 14px; background: #fff9e7; }
+  .verify-icon { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: #ffedb3; font-size: 1rem; }
+  .verify-note strong { display: block; margin-bottom: .2rem; font-size: .9rem; }
+  .verify-note p { margin: 0; color: #665b3d; font-size: .82rem; line-height: 1.48; }
+  .consent { display: flex; align-items: flex-start; gap: .6rem; margin: 1rem 0 1.15rem; color: #526177; font-size: .84rem; line-height: 1.45; }
+  .consent input { flex: 0 0 auto; width: 1rem; height: 1rem; margin: .15rem 0 0; accent-color: #d99a10; }
+  .submit { width: 100%; min-height: 3.15rem; border: 0; border-radius: 999px; background: var(--yellow); color: var(--ink); font-weight: 750; cursor: pointer; transition: transform .16s ease, background-color .16s ease; }
+  .submit:hover { background: #ffd95f; transform: translateY(-1px); }
+  .status { min-height: 1.3rem; margin: .65rem 0 0; color: #526177; font-size: .85rem; line-height: 1.4; }
+  .signin { margin: 1rem 0 0; text-align: center; color: var(--muted); font-size: .9rem; }
+  .text-link { color: #77570d; font-weight: 650; text-decoration: none; }
+  .text-link:hover { text-decoration: underline; }
+  @media (max-width: 480px) { .site-header { padding-block: .85rem; } .brand img { height: 39px; } .brand__name { font-size: 1.05rem; } main { align-items: start; padding-top: 1.5rem; } .signup-card { border-radius: 20px; } }

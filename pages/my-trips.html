@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a30">
+  <title>My trips — TravelDuckling</title>
+  <link rel="icon" href="../assets/images/logo-mark.png">
+  <link rel="stylesheet" href="../assets/css/my-trips.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="../index.html"><img src="../assets/images/logo-mark.png" alt=""><span>Travel<span>Duckling</span></span></a>
+      <nav class="nav" aria-label="Account navigation">
+        <a href="../index.html">Find a ride</a>
+        <button id="sign-out" type="button">Sign out</button>
+        <a class="nav-link" href="../index.html#offer">Offer a ride</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero__inner">
+      <div class="eyebrow">Your TravelDuckling</div>
+      <h1>Your trips, all in one place.</h1>
+      <p>Keep an eye on the rides you’re driving, the seats you’ve requested, and what’s coming up next.</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="profile-card" aria-labelledby="profile-heading">
+      <div class="avatar" id="profile-avatar" aria-hidden="true">T</div>
+      <div class="profile-summary">
+        <h2 id="profile-heading">Your driver profile</h2>
+        <p id="profile-summary-text">A friendly introduction helps riders know who they’ll be traveling with.</p>
+      </div>
+      <div class="profile-edit">
+        <div class="notice" id="page-notice" role="status" aria-live="polite" hidden></div>
+        <form class="profile-form" id="profile-form">
+          <div class="field"><label for="first-name">First name</label><input id="first-name" name="first_name" maxlength="80" required autocomplete="given-name"></div>
+          <div class="field"><label for="about">A few words about you</label><textarea id="about" name="about" maxlength="400" placeholder="Your travel style, favorite road trip playlist, or anything you'd like riders to know."></textarea></div>
+          <button class="button button--soft" id="save-profile" type="submit">Save profile</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="trip-panel" aria-labelledby="trips-heading">
+      <div class="panel-head">
+        <div><h2 id="trips-heading">Your trips</h2><p>As a driver or a rider.</p></div>
+        <a class="button button--gold" href="../index.html#offer">＋ Offer a ride</a>
+      </div>
+      <div class="filters" role="group" aria-label="Filter trips">
+        <button class="filter" type="button" data-period="upcoming" aria-pressed="true">Upcoming</button>
+        <button class="filter" type="button" data-period="past" aria-pressed="false">Past</button>
+        <span aria-hidden="true" style="width:1px;background:var(--line);margin:.15rem .25rem"></span>
+        <button class="filter" type="button" data-role="all" aria-pressed="true">All roles</button>
+        <button class="filter" type="button" data-role="driver" aria-pressed="false">🚗 Driver</button>
+        <button class="filter" type="button" data-role="rider" aria-pressed="false">🧍 Rider</button>
+      </div>
+      <div class="trip-list" id="trip-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer">TravelDuckling · A better way to share the journey.</footer>
+
+  <script type="module" src="../assets/js/my-trips.js"></script>
+</body>
+</html>

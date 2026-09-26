@@ -10,6 +10,13 @@ The login and signup pages support email/password, email verification, password 
 
 Ride publishing requires a verified email and a server-managed identity-verification claim, except for any individual UID deliberately placed in the API’s private prototype bypass configuration. That exception is enforced only by the API and is not an identity verification. Do not add account authorization or ride-matching rules to browser code.
 
-The home page can publish and search rides using the API. Successful publishing shows a confirmation with a link to `my-trips.html`. Search results show driver profile summaries and can send ride requests. The signed-in My trips page shows upcoming and past rides in driver and rider roles, lets drivers respond to requests and start a trip near departure, and provides a simple first-name/about profile editor. These features require the corresponding API revision and an allowlisted Firebase account.
+The home page can publish and search rides using the API. Successful publishing shows a confirmation with a link to `pages/my-trips.html`. Search results show driver profile summaries and can send ride requests. The signed-in My trips page shows upcoming and past rides in driver and rider roles, lets drivers respond to requests and start a trip near departure, and provides a simple first-name/about profile editor. These features require the corresponding API revision and an allowlisted Firebase account.
 
-For local development, serve these files from an HTTP server (ES modules do not work reliably from `file://`). On `localhost` and `127.0.0.1`, the modules connect to the Firebase Auth Emulator at port 9099 and the local API at port 8000; allow the frontend's local origin in the API's `CORS_ALLOWED_ORIGINS`. Production domains use Firebase Auth and the deployed API. The deployed API URL is configured in `index.html`.
+For local development, serve these files from an HTTP server (ES modules do not work reliably from `file://`). On `localhost` and `127.0.0.1`, the modules connect to the Firebase Auth Emulator at port 9099 and the local API at port 8000; allow the frontend's local origin in the API's `CORS_ALLOWED_ORIGINS`. Production domains use Firebase Auth and the deployed API. The local and deployed API URLs are centralized in `assets/js/config.js`.
+
+
+## Frontend structure
+
+This remains a static, framework-free site. Native browser ES modules keep the GitHub Pages deployment simple while dividing behavior by feature. Page markup stays in the HTML files; styles and scripts are under `assets/`. Firebase authentication is shared through `firebase-auth.js`, and the API base URL is shared through `assets/js/config.js`. See [the frontend architecture note](docs/architecture.md).
+
+The root `index.html` stays in place as the GitHub Pages entry page. Secondary HTML pages are in `pages/`, and brand/background artwork is in `assets/images/`.

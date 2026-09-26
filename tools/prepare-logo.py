@@ -1,9 +1,9 @@
 """One-shot helper: turn the raw logo export into the two web assets.
 
-Reads logo-full.png (cream background, duck above the wordmark) and writes:
-  logo-lockup.png - whole lockup, background knocked out
-  logo-duck.png   - just the duck + dashed trail + pin
-  logo-mark.png   - the duck on its own, for small placements
+Reads assets/images/logo-full.png (cream background, duck above the wordmark) and writes:
+  assets/images/logo-lockup.png - whole lockup, background knocked out
+  assets/images/logo-duck.png   - just the duck + dashed trail + pin
+  assets/images/logo-mark.png   - the duck on its own, for small placements
 
 Run with the .venv-img interpreter: .venv-img/bin/python tools/prepare-logo.py
 """
@@ -13,7 +13,7 @@ import os
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, "logo-full.png")
+SRC = os.path.join(ROOT, "assets", "images", "logo-full.png")
 
 # How far a pixel may stray from the sampled background colour and still be
 # treated as background. Tight enough to keep the white goggle/eye glints.
@@ -118,8 +118,8 @@ def main():
     img = knock_out(img, bg)
 
     lockup = img.crop(img.getbbox())
-    lockup.save(os.path.join(ROOT, "logo-lockup.png"))
-    print("logo-lockup.png", lockup.size)
+    lockup.save(os.path.join(ROOT, "assets", "images", "logo-lockup.png"))
+    print("assets/images/logo-lockup.png", lockup.size)
 
     rows = content_rows(img)
     gap = widest_gap(rows)
@@ -129,12 +129,12 @@ def main():
 
     duck = img.crop((0, 0, img.size[0], gap[0] + 1))
     duck = duck.crop(duck.getbbox())
-    duck.save(os.path.join(ROOT, "logo-duck.png"))
-    print("logo-duck.png", duck.size)
+    duck.save(os.path.join(ROOT, "assets", "images", "logo-duck.png"))
+    print("assets/images/logo-duck.png", duck.size)
 
     mark = isolate_largest_blob(duck)
-    mark.save(os.path.join(ROOT, "logo-mark.png"))
-    print("logo-mark.png", mark.size)
+    mark.save(os.path.join(ROOT, "assets", "images", "logo-mark.png"))
+    print("assets/images/logo-mark.png", mark.size)
 
 
 if __name__ == "__main__":
