@@ -16,8 +16,8 @@
         <a href="journeys.html">Journeys & invitations</a>
         <a href="../index.html">Find a ride</a>
         <button id="sign-out" type="button">Sign out</button>
-        <a class="nav-link" href="#my-rides" aria-current="page">My rides</a>
-        <a class="nav-link" href="group-trips.html?mine=1">My group trips</a>
+        <a class="nav-link" href="#my-rides" data-account-tab="my-rides" aria-current="page">My rides</a>
+        <a class="nav-link" href="#my-group-trips" data-account-tab="my-group-trips">My group trips</a>
       </nav>
     </div>
   </header>
@@ -63,10 +63,18 @@
       </div>
       <div class="trip-list" id="trip-list" aria-live="polite"></div>
     </section>
+
+    <section class="trip-panel account-section" id="my-group-trips" aria-labelledby="group-trips-heading" hidden>
+      <div class="panel-head">
+        <div><h2 id="group-trips-heading">My group trips</h2><p>Group trips you created or joined.</p></div>
+        <a class="button button--gold" href="group-trips.html">＋ Find or create a group trip</a>
+      </div>
+      <div class="trip-list" id="group-trip-list" aria-live="polite"></div>
+    </section>
   </main>
 
   <footer class="footer">TravelDuckling · A better way to share the journey.</footer>
 
-  <script type="module" src="../assets/js/my-trips.js"></script>
+  <script type="module" src="../assets/js/my-trips.js?v=20260926-account-tabs"></script>
 </body>
 </html>

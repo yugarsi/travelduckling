@@ -1,5 +1,6 @@
 import { auth, onAuthStateChanged, signOut } from "../../firebase-auth.js";
 import { API_BASE_URL } from "./config.js";
+import { groupApi } from "./groups/api.js";
 
     const tripList = document.getElementById("trip-list");
     const notice = document.getElementById("page-notice");
@@ -8,6 +9,7 @@ import { API_BASE_URL } from "./config.js";
     let role = "all";
     let currentUser = null;
     let signingOut = false;
+    const groupTripList = document.getElementById("group-trip-list");
 
     const make = (tag, className, text) => {
       const node = document.createElement(tag);
@@ -166,6 +168,47 @@ import { API_BASE_URL } from "./config.js";
       }
     }
 
+    function renderGroupTrips(groupTrips) {
+      groupTripList.replaceChildren();
+      if (!groupTrips.length) {
+        const empty = make("div", "empty-state");
+        empty.append(make("div", "empty-state__icon", "🧭"), make("h3", "", "No group trips yet"), make("p", "", "Create a group trip or join one from the discovery page."));
+        groupTripList.appendChild(empty);
+        return;
+      }
+      groupTrips.sort((a, b) => String(a.start).localeCompare(String(b.start)));
+      groupTrips.forEach((trip) => {
+        const card = make("article", "trip-card");
+        const role = trip.is_host ? "You’re hosting" : (trip.membership === "accepted" ? "You’re going" : "Join request: " + (trip.membership || "pending"));
+        card.append(make("div", "trip-card__head", role), make("h3", "trip-route", trip.title));
+        card.append(make("div", "trip-date", `${trip.place} · ${trip.start}${trip.end !== trip.start ? " – " + trip.end : ""}`));
+        card.append(make("div", "trip-info", `${trip.category} · ${trip.spots} spot(s) left · $${trip.cost} estimated per person`));
+        if (trip.desc) card.append(make("p", "trip-date", trip.desc));
+        const link = make("a", "button button--soft", trip.is_host ? "Manage group trip" : "View group trip");
+        link.href = "group-trips.html?mine=1";
+        card.append(link);
+        groupTripList.appendChild(card);
+      });
+    }
+
+    async function loadGroupTrips() {
+      groupTripList.replaceChildren(make("div", "notice", "Loading your group trips…"));
+      try { renderGroupTrips(await groupApi("/mine")); }
+      catch (error) { groupTripList.replaceChildren(make("div", "notice", error.message)); }
+    }
+
+    function selectAccountSection() {
+      const requested = location.hash === "#my-group-trips" ? "my-group-trips" : "my-rides";
+      document.querySelectorAll("[data-account-tab]").forEach((tab) => {
+        const active = tab.dataset.accountTab === requested;
+        tab.setAttribute("aria-current", active ? "page" : "false");
+      });
+      document.querySelectorAll(".account-section").forEach((section) => { section.hidden = section.id !== requested; });
+      if (requested === "my-group-trips" && currentUser) loadGroupTrips();
+    }
+    window.addEventListener("hashchange", selectAccountSection);
+    selectAccountSection();
+
     async function loadProfile() {
       try {
         const profile = await api("/api/v1/me/profile");
@@ -226,4 +269,5 @@ import { API_BASE_URL } from "./config.js";
       }
       currentUser = user;
       await Promise.all([loadProfile(), loadTrips()]);
+      selectAccountSection();
     });
