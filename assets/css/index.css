@@ -1330,3 +1330,9 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+/* Group-trip actions stay readable as host requests grow. */
+.group-card__foot { flex-wrap: wrap; gap: 0.65rem; }
+.group-card__body { min-width: 0; overflow-wrap: anywhere; }
+#group-notice { margin-block: 1rem; }
+#create-dialog { max-height: 90vh; overflow-y: auto; }

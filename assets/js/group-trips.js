@@ -1,10 +1,5 @@
-  /* --------------------------------------------------------------------
-     Group trips & activities — browse, filter, and create.
-     Front-end only: created groups live in the DOM for this page view.
-  -------------------------------------------------------------------- */
-  (function () {
-    "use strict";
-
+import { auth, onAuthStateChanged } from '../../firebase-auth.js';
+import { groupApi } from './groups/api.js';
     var CATEGORIES = {
       hiking:    { label: "Hiking",        emoji: "🥾", cover: "linear-gradient(140deg, #2f7d6f, #57b89f)" },
       roadtrip:  { label: "Road trip",     emoji: "🚐", cover: "linear-gradient(140deg, #d99a10, #ffd257)" },
@@ -14,105 +9,47 @@
       nightlife: { label: "Nightlife",     emoji: "🎷", cover: "linear-gradient(140deg, #3a2a5c, #7b5ac0)" }
     };
 
-    var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    var grid     = document.getElementById("group-grid");
-    var empty    = document.getElementById("group-empty");
-    var count    = document.getElementById("group-count");
-    var query    = document.getElementById("group-query");
-    var chipList = document.getElementById("group-categories");
-    var spotsOnly = document.getElementById("spots-only");
-
-    var dialog   = document.getElementById("create-dialog");
-    var openBtn  = document.getElementById("create-open");
-    var closeBtn = document.getElementById("create-close");
-    var cancel   = document.getElementById("create-cancel");
-    var createForm = document.getElementById("create-form");
-    var createError = document.getElementById("create-error");
-
-    var activeCategory = "all";
-
-    /* ---- Browsing ---------------------------------------------------- */
-
-    function cards() {
-      return Array.prototype.slice.call(grid.children);
+const $ = id => document.getElementById(id);
+const grid = $('group-grid'), notice = $('group-notice');
+$('group-mine').checked = new URLSearchParams(location.search).has('mine');
+let trips = [], mine = [], category = 'all', generation = 0;
+function render() {
+  const own = new Map(mine.map(t => [t.id, t]));
+  const source = $('group-mine').checked ? mine : trips.map(t => own.get(t.id) || t);
+  const query = $('group-query').value.toLowerCase().trim();
+  const filtered = source.filter(t => (category === 'all' || category === t.category)
+    && (!query || `${t.title} ${t.place} ${t.desc}`.toLowerCase().includes(query))
+    && ($('spots-only').getAttribute('aria-pressed') !== 'true' || t.spots > 0))
+    .sort((a,b) => a.start.localeCompare(b.start));
+  grid.replaceChildren(...filtered.map(buildCard));
+  $('group-empty').hidden = filtered.length > 0;
+  $('group-count').textContent = `${filtered.length} group trips`;
+}
+async function load() {
+  const version = ++generation;
+  notice.textContent = 'Loading trips…';
+  try {
+    const publicTrips = await groupApi('', 'GET', undefined, true);
+    let myTrips = [], warning = '';
+    if (auth.currentUser) {
+      try { myTrips = await groupApi('/mine'); } catch (error) { warning = error.message; }
     }
-
-    function matches(card, needle) {
-      if (activeCategory !== "all" && card.dataset.category !== activeCategory) return false;
-      if (spotsOnly.getAttribute("aria-pressed") === "true" && Number(card.dataset.spots) < 1) return false;
-      if (!needle) return true;
-
-      var haystack = (card.dataset.keywords || "") + " " +
-        card.querySelector(".group-card__title").textContent + " " +
-        card.querySelector(".group-card__place").textContent;
-      return haystack.toLowerCase().indexOf(needle) !== -1;
-    }
-
-    function render() {
-      var needle = query.value.trim().toLowerCase();
-      var shown = 0;
-
-      cards().forEach(function (card) {
-        var keep = matches(card, needle);
-        card.hidden = !keep;
-        if (keep) shown += 1;
-      });
-
-      empty.hidden = shown > 0;
-      count.textContent = shown === 1
-        ? "1 group open"
-        : shown + " groups open";
-    }
-
-    query.addEventListener("input", render);
-
-    chipList.addEventListener("click", function (event) {
-      var chip = event.target.closest(".chip");
-      if (!chip) return;
-
-      activeCategory = chip.dataset.category;
-      Array.prototype.forEach.call(chipList.querySelectorAll(".chip"), function (c) {
-        c.setAttribute("aria-pressed", String(c === chip));
-      });
-      render();
-    });
-
-    spotsOnly.addEventListener("click", function () {
-      var on = spotsOnly.getAttribute("aria-pressed") === "true";
-      spotsOnly.setAttribute("aria-pressed", String(!on));
-      render();
-    });
-
-    // Join / waitlist are stubs until the backend lands — flip the button so
-    // the intent is at least acknowledged.
-    grid.addEventListener("click", function (event) {
-      var btn = event.target.closest("[data-join], [data-waitlist]");
-      if (!btn || btn.disabled) return;
-
-      var waitlist = btn.hasAttribute("data-waitlist");
-      btn.textContent = waitlist ? "On the waitlist ✓" : "Request sent ✓";
-      btn.disabled = true;
-      btn.closest(".group-card").classList.add("group-card--joined");
-    });
-
-    /* ---- Creating ---------------------------------------------------- */
-
-    function prettyDate(value) {
-      var parts = value.split("-");
-      if (parts.length !== 3) return "";
-      return MONTHS[Number(parts[1]) - 1] + " " + Number(parts[2]);
-    }
-
-    function dateRange(start, end) {
-      var a = prettyDate(start);
-      var b = prettyDate(end);
-      if (!a) return "Dates TBC";
-      if (!b || b === a) return a;
-      return a + " – " + b;
-    }
-
+    if (version !== generation) return;
+    trips = publicTrips; mine = myTrips; render(); notice.textContent = warning;
+  } catch (error) { if (version === generation) notice.textContent = error.message; }
+}
+$('group-query').addEventListener('input', render);
+$('group-mine').addEventListener('change', render);
+$('group-categories').addEventListener('click', event => {
+  const button = event.target.closest('[data-category]'); if (!button) return;
+  category = button.dataset.category;
+  document.querySelectorAll('[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+  render();
+});
+$('spots-only').addEventListener('click', () => {
+  const button = $('spots-only'); button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true')); render();
+});
     function el(tag, className, text) {
       var node = document.createElement(tag);
       if (className) node.className = className;
@@ -127,7 +64,7 @@
 
     function buildCard(data) {
       var meta = CATEGORIES[data.category];
-      var spots = Math.max(0, data.size - 1); // the host takes one spot
+      var spots = data.spots;
 
       var card = el("li", "group-card group-card--new");
       card.dataset.category = data.category;
@@ -137,7 +74,7 @@
       var cover = el("div", "group-card__cover");
       cover.style.setProperty("--cover", meta.cover);
       cover.appendChild(el("span", "group-card__pill group-card__pill--category", meta.label));
-      cover.appendChild(el("span", "group-card__pill group-card__pill--when", dateRange(data.start, data.end)));
+      cover.appendChild(el("span", "group-card__pill group-card__pill--when", data.start + " – " + data.end));
       var glyph = el("span", null, meta.emoji);
       glyph.setAttribute("aria-hidden", "true");
       cover.appendChild(glyph);
@@ -152,115 +89,80 @@
       body.appendChild(place);
 
       body.appendChild(el("p", "group-card__desc",
-        data.desc || "The host hasn't added a plan yet — ask in the group chat."));
+        data.desc || "More details coming from the host."));
 
       var metaRow = el("div", "group-card__meta");
       var avatars = el("ul", "avatars");
       avatars.setAttribute("aria-hidden", "true");
-      var you = el("li", null, "You");
+      var you = el("li", null, data.host_name);
       you.style.setProperty("--av", "#d99a10");
       you.style.fontSize = "0.55rem";
       avatars.appendChild(you);
       metaRow.appendChild(avatars);
       metaRow.appendChild(el("span", null,
         spots + " of " + data.size + " spots left" +
-        (data.visibility === "invite" ? " · invite only" : "")));
+        " · Hosted by " + data.host_name));
       body.appendChild(metaRow);
 
       var foot = el("div", "group-card__foot");
       var price = el("span", "group-card__price");
       price.appendChild(el("strong", null, data.cost > 0 ? "$" + data.cost : "Free"));
-      price.appendChild(document.createTextNode("per person"));
+      price.appendChild(document.createTextNode(" estimated per person · no payment collected"));
       foot.appendChild(price);
 
-      var manage = el("button", "btn btn--quiet", "You're the host");
-      manage.type = "button";
-      manage.disabled = true;
-      foot.appendChild(manage);
+      const past = data.end < new Date().toISOString().slice(0, 10);
+      const closed = data.status !== 'open' || past;
+      const act = (label, path, method = 'POST', payload) => {
+        const button = el('button', 'btn btn--quiet', label);
+        button.type = 'button';
+        button.addEventListener('click', async () => {
+          if (!auth.currentUser) { location.href = 'login.html?next=group-trips.html'; return; }
+          button.disabled = true;
+          try { await groupApi(path, method, payload); await load(); }
+          catch (error) { notice.textContent = error.message; button.disabled = false; }
+        });
+        foot.appendChild(button);
+      };
+      body.appendChild(el('p', '', data.is_host ? 'You are hosting' : data.membership ? 'Your request: ' + data.membership : 'Host approval required'));
+      if (closed) body.appendChild(el('p', '', data.status === 'cancelled' ? 'Trip cancelled' : 'Past trip'));
+      else if (data.is_host) {
+        for (const request of data.requests || []) {
+          body.appendChild(el('p', '', request.name + ' · ' + request.status));
+          if (request.status === 'pending') {
+            act('Accept ' + request.name, `/${data.id}/requests/${encodeURIComponent(request.uid)}`, 'PATCH', {decision: 'accept'});
+            act('Decline ' + request.name, `/${data.id}/requests/${encodeURIComponent(request.uid)}`, 'PATCH', {decision: 'decline'});
+          }
+        }
+        act('Cancel trip', `/${data.id}/cancel`);
+      } else if (['pending', 'accepted'].includes(data.membership)) act('Withdraw / leave', `/${data.id}/leave`);
+      else if (spots > 0) act(auth.currentUser ? 'Request to join' : 'Log in to join', `/${data.id}/join`);
+      else body.appendChild(el('p', '', 'This group is full'));
       body.appendChild(foot);
 
       card.appendChild(body);
       return card;
     }
 
-    function openDialog() {
-      createError.textContent = "";
-      var todayIso = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString().slice(0, 10);
-      var start = document.getElementById("g-start");
-      var end = document.getElementById("g-end");
-      start.min = todayIso;
-      end.min = todayIso;
-      if (!start.value) start.value = todayIso;
 
-      if (typeof dialog.showModal === "function") dialog.showModal();
-      else dialog.setAttribute("open", "");
-      document.getElementById("g-title").focus();
-    }
-
-    function closeDialog() {
-      if (typeof dialog.close === "function") dialog.close();
-      else dialog.removeAttribute("open");
-    }
-
-    openBtn.addEventListener("click", openDialog);
-    closeBtn.addEventListener("click", closeDialog);
-    cancel.addEventListener("click", closeDialog);
-
-    // Clicking the backdrop dismisses: the dialog element fills the viewport,
-    // so a click that lands on it rather than the panel is a backdrop click.
-    dialog.addEventListener("click", function (event) {
-      if (event.target === dialog) closeDialog();
-    });
-
-    createForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      var data = {
-        title: document.getElementById("g-title").value.trim(),
-        place: document.getElementById("g-place").value.trim(),
-        category: document.getElementById("g-category").value,
-        start: document.getElementById("g-start").value,
-        end: document.getElementById("g-end").value,
-        size: Number(document.getElementById("g-size").value),
-        cost: Number(document.getElementById("g-cost").value) || 0,
-        desc: document.getElementById("g-desc").value.trim(),
-        visibility: createForm.elements.visibility.value
-      };
-
-      if (!data.title || !data.place) {
-        createError.textContent = "Give the group a name and a destination.";
-        document.getElementById(data.title ? "g-place" : "g-title").focus();
-        return;
-      }
-
-      if (!data.size || data.size < 2) {
-        createError.textContent = "A group needs room for at least 2 people.";
-        document.getElementById("g-size").focus();
-        return;
-      }
-
-      if (data.end && data.start && data.end < data.start) {
-        createError.textContent = "The end date falls before the start date.";
-        document.getElementById("g-end").focus();
-        return;
-      }
-
-      grid.insertBefore(buildCard(data), grid.firstChild);
-      createForm.reset();
-      closeDialog();
-
-      // Clear any active filter so the new group is definitely visible.
-      query.value = "";
-      spotsOnly.setAttribute("aria-pressed", "false");
-      activeCategory = "all";
-      Array.prototype.forEach.call(chipList.querySelectorAll(".chip"), function (c) {
-        c.setAttribute("aria-pressed", String(c.dataset.category === "all"));
-      });
-      render();
-
-      grid.firstChild.scrollIntoView({ block: "center", behavior: "smooth" });
-    });
-
-    render();
-  })();
+const dialog = $('create-dialog');
+$('create-open').addEventListener('click', () => {
+  if (!auth.currentUser) { location.href = 'login.html?next=group-trips.html'; return; }
+  $('create-error').textContent = '';
+  $('g-start').min = $('g-end').min = new Date().toISOString().slice(0,10);
+  dialog.showModal();
+});
+$('create-close').addEventListener('click', () => dialog.close());
+$('create-cancel').addEventListener('click', () => dialog.close());
+$('create-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = event.target.querySelector('[type=submit]'); button.disabled = true;
+  const data = Object.fromEntries(['title','place','category','start','end','size','cost','desc'].map(k => [k, $('g-' + k).value]));
+  data.end ||= data.start; data.size = Number(data.size); data.cost = Number(data.cost);
+  try {
+    await groupApi('', 'POST', data);
+    dialog.close(); event.target.reset(); $('group-mine').checked = true;
+    await load(); notice.textContent = 'Your trip is published. You can review join requests here.';
+  } catch (error) { $('create-error').textContent = error.message; }
+  finally { button.disabled = false; }
+});
+onAuthStateChanged(auth, () => { mine = []; grid.replaceChildren(); load(); });
