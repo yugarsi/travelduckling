@@ -7,6 +7,7 @@ import { API_BASE_URL } from "./config.js";
     let period = "upcoming";
     let role = "all";
     let currentUser = null;
+    let signingOut = false;
 
     const make = (tag, className, text) => {
       const node = document.createElement(tag);
@@ -203,10 +204,23 @@ import { API_BASE_URL } from "./config.js";
       document.querySelectorAll("[data-role]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
       renderTrips();
     }));
-    document.getElementById("sign-out").addEventListener("click", () => signOut(auth).then(() => { location.href = "../index.html"; }));
+    document.getElementById("sign-out").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      signingOut = true;
+      button.disabled = true;
+      try {
+        await signOut(auth);
+        location.replace("/index.html");
+      } catch (error) {
+        signingOut = false;
+        button.disabled = false;
+        setNotice("Could not sign out. Please try again.", "error");
+      }
+    });
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        if (signingOut) return;
         location.replace("login.html?next=../pages/my-trips.html");
         return;
       }

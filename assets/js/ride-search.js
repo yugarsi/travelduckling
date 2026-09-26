@@ -47,7 +47,11 @@ import { API_BASE_URL } from "./config.js";
     accountLink.addEventListener("click", function (event) {
       if (auth.currentUser) {
         event.preventDefault();
-        signOut(auth).catch(function () {});
+        signOut(auth).then(function () {
+          window.location.replace("/index.html");
+        }).catch(function () {
+          status.textContent = "Could not sign out. Please try again.";
+        });
       }
     });
 
