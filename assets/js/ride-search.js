@@ -1,6 +1,7 @@
 
-  import { auth, onAuthStateChanged, signOut } from "../../firebase-auth.js";
+import { auth, onAuthStateChanged, signOut } from "../../firebase-auth.js";
 import { API_BASE_URL } from "./config.js";
+import { attachAddressAutocomplete, readPlaceId, swapPlaceSelections, useCurrentLocation } from "./places.js";
 
   (function () {
     "use strict";
@@ -30,6 +31,12 @@ import { API_BASE_URL } from "./config.js";
     var tabs    = Array.prototype.slice.call(document.querySelectorAll(".search__tab"));
     var myTripsLink = document.getElementById("my-trips-link");
     var profileDialog = document.getElementById("driver-profile-dialog");
+
+    attachAddressAutocomplete(fromEl);
+    attachAddressAutocomplete(toEl);
+    document.getElementById("use-current-location").addEventListener("click", function () {
+      useCurrentLocation(fromEl, this);
+    });
 
     document.getElementById("year").textContent = String(new Date().getFullYear());
     var accountLink = document.querySelector(".site-nav .nav-cta");
@@ -178,6 +185,7 @@ import { API_BASE_URL } from "./config.js";
       var held = fromEl.value;
       fromEl.value = toEl.value;
       toEl.value = held;
+      swapPlaceSelections(fromEl, toEl);
     });
 
     form.addEventListener("submit", function (event) {
@@ -221,6 +229,8 @@ import { API_BASE_URL } from "./config.js";
             body: JSON.stringify({
               origin: origin,
               destination: destination,
+              origin_place_id: readPlaceId(fromEl) || undefined,
+              destination_place_id: readPlaceId(toEl) || undefined,
               departure_at: departure.toISOString(),
               available_seats: Number(seatsEl.value)
             })
@@ -232,6 +242,8 @@ import { API_BASE_URL } from "./config.js";
             departure_mode: departureMode,
             seats: seatsEl.value
           });
+          if (readPlaceId(fromEl)) params.set("origin_place_id", readPlaceId(fromEl));
+          if (readPlaceId(toEl)) params.set("destination_place_id", readPlaceId(toEl));
           if (departureMode === "range") {
             if (!searchDateEl.value || !searchStartEl.value || !searchEndEl.value) {
               throw new Error("Choose a date, start time, and end time.");

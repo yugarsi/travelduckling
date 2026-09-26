@@ -12,6 +12,8 @@ Ride publishing requires a verified email and a server-managed identity-verifica
 
 The home page can publish and search rides using the API. Successful publishing shows a confirmation with a link to `pages/my-trips.html`. Search results show driver profile summaries and can send ride requests. The signed-in My trips page shows upcoming and past rides in driver and rider roles, lets drivers respond to requests and start a trip near departure, and provides a simple first-name/about profile editor. These features require the corresponding API revision and an allowlisted Firebase account.
 
+The home page address fields use Google Places Autocomplete (US results) when a restricted Maps browser key is configured. Current-location lookup is optional and only requests browser location permission after the user clicks the button. See [Google Maps address setup](docs/google-maps-addresses.md) for required APIs, key restrictions, local origins, pricing, quotas, and attribution.
+
 For local development, serve these files from an HTTP server (ES modules do not work reliably from `file://`). On `localhost` and `127.0.0.1`, the modules connect to the Firebase Auth Emulator at port 9099 and the local API at port 8000; allow the frontend's local origin in the API's `CORS_ALLOWED_ORIGINS`. Production domains use Firebase Auth and the deployed API. The local and deployed API URLs are centralized in `assets/js/config.js`.
 
 
