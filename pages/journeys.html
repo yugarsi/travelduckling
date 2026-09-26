@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101a30"><title>Plan a journey — TravelDuckling</title><link rel="icon" href="../assets/images/logo-mark.png"><link rel="stylesheet" href="../assets/css/journeys.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101a30"><title>Shared rides — TravelDuckling</title><link rel="icon" href="../assets/images/logo-mark.png"><link rel="stylesheet" href="../assets/css/journeys.css"></head>
 <body>
 <header><a class="brand" href="../index.html"><img src="../assets/images/logo-mark.png" alt="">Travel<span>Duckling</span></a><nav aria-label="Main"><a href="../index.html">Home</a><a href="my-trips.html">My trips & profile</a><button id="logout" hidden>Sign out</button><a id="login" href="login.html?next=journeys.html">Log in</a></nav></header>
 <main>
-<section class="intro"><p class="eyebrow">GOING THE SAME WAY</p><h1>A shared journey starts here.</h1><p>Offer your spare seats or tell drivers where you want to go. One way, or there and back.</p></section>
+<section class="intro"><p class="eyebrow">SHARED RIDES</p><h1>Offer a ride or find a seat.</h1><p>Publish the drive you already plan to make, or tell drivers where you want to go. Share a one-way ride or offer both directions for a round trip.</p></section>
+<section class="trip-value" aria-label="Benefits of sharing a ride"><div><strong>Offset trip costs</strong><span>Share eligible fuel and road expenses.</span></div><div><strong>Find your people</strong><span>Review compatible travelers before accepting.</span></div><div><strong>Make empty seats useful</strong><span>Travel together instead of taking separate cars.</span></div><p><b>Example:</b> a 240-mile drive at 30 mpg and $3.50/gal uses about $28 of fuel. Split evenly among a driver and two passengers, that’s about $9.33 each—roughly $18.67 less for the driver than covering fuel alone. <small>Illustration only; fuel prices, routes, and vehicle efficiency vary. This is not a fare quote.</small></p></section>
 <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
 <div class="layout">
-<section class="panel" aria-labelledby="plan-heading"><h2 id="plan-heading">Plan your journey</h2>
+<section class="panel" aria-labelledby="plan-heading"><h2 id="plan-heading">Plan your ride</h2>
 <form id="journey-form">
 <fieldset class="choices"><legend>For this journey, I’m…</legend><label><input type="radio" name="role" value="driver" checked> 🚗 Offering seats</label><label><input type="radio" name="role" value="rider"> 🎒 Looking for seats</label></fieldset>
 <label class="field">Journey type<select id="trip-type"><option value="oneway">One way</option><option value="roundtrip">Round trip</option></select></label>
@@ -22,7 +23,7 @@
 <label class="field">Travel preferences<textarea id="preferences" maxlength="400" placeholder="Quiet ride, luggage space, pets by agreement…"></textarea></label>
 <label class="field">Activity together? Optional<input id="activity" maxlength="120" placeholder="For example: hiking Mount Si together"><span class="hint">Leave blank if you are only sharing transport. A return seat does not include an organised activity.</span></label>
 <p class="hint">Times use your device’s timezone: <strong id="timezone"></strong>. This publishes a travel plan; seats are confirmed only after acceptance. No payment is collected.</p>
-<button class="primary" id="publish">Publish journey</button>
+<button class="primary" id="publish">Publish ride</button>
 </form></section>
 <section class="panel" aria-labelledby="your-heading"><div class="section-heading"><h2 id="your-heading">Your journeys</h2><button id="refresh" type="button">Refresh</button></div><p class="hint">Review requests and invitations, find compatible people, and manage each direction.</p><label class="field">Show<select id="period"><option value="upcoming">Upcoming & active</option><option value="past">Past & closed</option><option value="all">All journeys</option></select></label><div id="journey-list"><p>Log in to publish and manage your journeys.</p></div><p><a href="my-trips.html">View earlier rides and edit your profile →</a></p></section>
 </div>

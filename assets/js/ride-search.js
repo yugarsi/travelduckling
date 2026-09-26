@@ -1,5 +1,5 @@
 
-import { auth, onAuthStateChanged, signOut } from "../../firebase-auth.js";
+import { auth } from "../../firebase-auth.js";
 import { API_BASE_URL } from "./config.js";
 import { attachAddressAutocomplete, readPlaceId, swapPlaceSelections, useCurrentLocation } from "./places.js";
 
@@ -29,7 +29,6 @@ import { attachAddressAutocomplete, readPlaceId, swapPlaceSelections, useCurrent
     var publishSuccess = document.getElementById("publish-success");
     var label   = document.getElementById("submit-label");
     var tabs    = Array.prototype.slice.call(document.querySelectorAll(".search__tab"));
-    var myTripsLink = document.getElementById("my-trips-link");
     var profileDialog = document.getElementById("driver-profile-dialog");
 
     attachAddressAutocomplete(fromEl);
@@ -39,29 +38,6 @@ import { attachAddressAutocomplete, readPlaceId, swapPlaceSelections, useCurrent
     });
 
     document.getElementById("year").textContent = String(new Date().getFullYear());
-    var accountLink = document.querySelector(".site-nav .nav-cta");
-    onAuthStateChanged(auth, function (user) {
-      if (!user) {
-        myTripsLink.hidden = true;
-        accountLink.textContent = "Log in";
-        accountLink.href = "pages/login.html?next=../index.html";
-        return;
-      }
-      myTripsLink.hidden = false;
-      accountLink.textContent = "Sign out";
-      accountLink.href = "#sign-out";
-    });
-    accountLink.addEventListener("click", function (event) {
-      if (auth.currentUser) {
-        event.preventDefault();
-        signOut(auth).then(function () {
-          window.location.replace("/index.html");
-        }).catch(function () {
-          status.textContent = "Could not sign out. Please try again.";
-        });
-      }
-    });
-
     // Default the date picker to today and disallow trips in the past.
     var today = new Date();
     var iso = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
@@ -184,6 +160,7 @@ import { attachAddressAutocomplete, readPlaceId, swapPlaceSelections, useCurrent
         updateFields();
       });
     });
+
     updateFields();
 
     document.getElementById("swap").addEventListener("click", function () {

@@ -195,8 +195,64 @@
   .site-nav .nav-cta:hover { background: #fff; }
   .site-nav a[hidden], .publish-success[hidden] { display: none; }
 
+  .account-menu { position: relative; margin-left: 0.25rem; }
+  .account-menu[hidden], .account-menu__panel[hidden] { display: none; }
+  .account-menu__trigger {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.32);
+    border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    cursor: pointer;
+  }
+  .account-menu__avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--duck-500);
+    color: var(--ink-900);
+    font-weight: 750;
+  }
+  .account-menu__panel {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + .55rem);
+    right: 0;
+    min-width: 176px;
+    padding: .4rem;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: var(--radius-md);
+    background: #fff;
+    box-shadow: var(--shadow-md);
+  }
+  .site-nav .account-menu__panel a,
+  .account-menu__panel button {
+    display: block;
+    width: 100%;
+    padding: .65rem .75rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink-900);
+    text-align: left;
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+  }
+  .site-nav .account-menu__panel a:hover,
+  .account-menu__panel button:hover { background: #f1f4f8; color: var(--ink-900); }
+
   @media (max-width: 860px) {
-    .site-nav a:not(.nav-cta):not(.nav-my-trips) { display: none; }
+    .site-header { flex-wrap: wrap; }
+    .site-nav { width: 100%; margin-left: 0; justify-content: center; flex-wrap: wrap; gap: 0.1rem; }
+    .site-nav a:not(.nav-cta) { display: block; padding: 0.45rem 0.55rem; font-size: 0.82rem; }
+    .site-nav .account-menu__panel a { display: block; }
   }
 
   /* ---------------------------------------------------------------------
@@ -668,6 +724,37 @@
   .stats span {
     font-size: 0.85rem;
     letter-spacing: 0.02em;
+  }
+
+  .sharing-benefits {
+    width: var(--shell);
+    margin: 0 auto;
+    padding: clamp(1.75rem, 5vw, 3.5rem);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: var(--radius-lg);
+    background: rgba(13, 21, 38, .64);
+    color: #fff;
+    box-shadow: var(--shadow-md);
+  }
+  .sharing-benefits__intro { max-width: 62ch; margin: 0 auto 1.75rem; text-align: center; }
+  .sharing-benefits__intro h2 { margin: .45rem 0; font-size: clamp(1.8rem, 4vw, 2.7rem); letter-spacing: -.035em; }
+  .sharing-benefits__intro > p:last-child { margin: .55rem 0 0; color: rgba(255,255,255,.78); line-height: 1.6; }
+  .sharing-benefits__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .sharing-benefit { padding: 1.15rem; border: 1px solid rgba(255,255,255,.13); border-radius: var(--radius-md); background: rgba(255,255,255,.07); }
+  .sharing-benefit__icon { display: grid; place-items: center; width: 2.35rem; height: 2.35rem; border-radius: 50%; background: rgba(255,204,51,.18); color: var(--duck-500); font-size: 1.25rem; font-weight: 750; }
+  .sharing-benefit h3 { margin: .85rem 0 .4rem; font-size: 1.05rem; }
+  .sharing-benefit p { margin: 0; color: rgba(255,255,255,.76); line-height: 1.55; font-size: .92rem; }
+  .sharing-example { display: grid; grid-template-columns: minmax(145px, .65fr) 2fr; gap: .35rem 1.2rem; align-items: center; margin-top: 1rem; padding: 1.15rem 1.3rem; border-radius: var(--radius-md); background: rgba(255,204,51,.12); }
+  .sharing-example__label { display: block; color: var(--duck-500); font-size: .76rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .sharing-example > div strong { display: block; margin-top: .25rem; }
+  .sharing-example p { margin: 0; color: rgba(255,255,255,.88); line-height: 1.55; }
+  .sharing-example small { grid-column: 2; color: rgba(255,255,255,.65); line-height: 1.4; }
+  .sharing-benefits__cta { display: inline-flex; align-items: center; gap: .6rem; margin-top: 1.2rem; color: var(--duck-500); font-weight: 700; text-decoration: none; }
+  .sharing-benefits__cta:hover { color: #fff; }
+  @media (max-width: 700px) {
+    .sharing-benefits__grid { grid-template-columns: 1fr; }
+    .sharing-example { grid-template-columns: 1fr; }
+    .sharing-example small { grid-column: 1; }
   }
 
   /* ---------------------------------------------------------------------

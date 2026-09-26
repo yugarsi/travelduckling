@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>Group trips — TravelDuckling</title>
+  <meta name="description" content="Find people to join your next TravelDuckling group trip or activity.">
+  <link rel="icon" href="../assets/images/logo-mark.png" type="image/png">
+  <link rel="stylesheet" href="../assets/css/index.css">
+</head>
+<body data-home-url="../index.html">
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__photo"></div>
+    <div class="backdrop__stars"></div>
+    <div class="backdrop__scrim"></div>
+  </div>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="../index.html">
+        <img class="brand__mark" src="../assets/images/logo-mark.png" alt="" width="371" height="325">
+        <span class="brand__name">Travel<span>Duckling</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#search-form">Shared rides</a>
+        <a href="group-trips.html" aria-current="page">Group trips</a>
+        <a href="../index.html#how-it-works">How it works</a>
+        <a href="../index.html#help">Help</a>
+        <a class="nav-cta" id="account-login" href="login.html?next=group-trips.html">Log in</a>
+        <div class="account-menu" id="account-menu" hidden>
+          <button class="account-menu__trigger" id="account-menu-trigger" type="button" aria-label="Open account menu" aria-expanded="false">
+            <span class="account-menu__avatar" id="account-avatar" aria-hidden="true">T</span>
+            <span class="visually-hidden">Account menu</span>
+          </button>
+          <div class="account-menu__panel" id="account-menu-panel" hidden>
+            <a href="my-trips.html">My trips</a>
+            <a href="my-trips.html#profile">Settings</a>
+            <button id="account-sign-out" type="button">Sign out</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main>
+<!-- ================================================================
+           Feature 2 — group trips & activities
+      ================================================================= -->
+      <section class="groups" id="group-trips" aria-labelledby="groups-title">
+        <div class="groups__head">
+          <div class="groups__intro">
+            <p class="eyebrow">Group trips</p>
+            <h1 class="groups__title" id="groups-title">Don't travel alone —<br>find your flock</h1>
+            <p class="groups__lede">
+              Join a trip someone has already planned, or start your own and let
+              travellers heading the same way fill the spots.
+            </p>
+          </div>
+
+          <button class="btn btn--duck" id="create-open" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Create a trip
+          </button>
+        </div>
+
+        <div class="groups__toolbar">
+          <div class="groups__search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <label class="visually-hidden" for="group-query">Search group trips and activities</label>
+            <input id="group-query" type="search" placeholder="Search a place or activity" autocomplete="off">
+          </div>
+
+          <ul class="chips" id="group-categories" aria-label="Filter by category">
+            <li><button class="chip" type="button" data-category="all" aria-pressed="true">All</button></li>
+            <li><button class="chip" type="button" data-category="hiking" aria-pressed="false">Hiking</button></li>
+            <li><button class="chip" type="button" data-category="roadtrip" aria-pressed="false">Road trip</button></li>
+            <li><button class="chip" type="button" data-category="food" aria-pressed="false">Food &amp; drink</button></li>
+            <li><button class="chip" type="button" data-category="culture" aria-pressed="false">Culture</button></li>
+            <li><button class="chip" type="button" data-category="beach" aria-pressed="false">Beach</button></li>
+            <li><button class="chip" type="button" data-category="nightlife" aria-pressed="false">Nightlife</button></li>
+          </ul>
+
+          <button class="chip" type="button" id="spots-only" aria-pressed="false">Spots left only</button>
+        </div>
+
+        <p class="groups__count" id="group-count" role="status" aria-live="polite"></p>
+
+        <ul class="group-grid" id="group-grid">
+          <li class="group-card" data-category="hiking" data-spots="3"
+              data-keywords="sunrise hike camp mount rainier washington hiking outdoors">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #2f7d6f, #57b89f)">
+              <span class="group-card__pill group-card__pill--category">Hiking</span>
+              <span class="group-card__pill group-card__pill--when">Oct 4–6</span>
+              <span aria-hidden="true">🥾</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Sunrise hike &amp; overnight camp</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Mount Rainier, WA
+              </p>
+              <p class="group-card__desc">Two nights under canvas, an easy 6-mile loop and a very early alarm. Gear sharing sorted in the group chat.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#d99a10">MK</li><li style="--av:#2f7d6f">JP</li>
+                  <li style="--av:#4b3a86">AR</li><li style="--av:#c2521f">+2</li>
+                </ul>
+                <span>3 of 8 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$85</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="roadtrip" data-spots="2"
+              data-keywords="pacific coast highway road trip san francisco los angeles big sur driving">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #d99a10, #ffd257)">
+              <span class="group-card__pill group-card__pill--category">Road trip</span>
+              <span class="group-card__pill group-card__pill--when">Oct 11–14</span>
+              <span aria-hidden="true">🚐</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Pacific Coast Highway, SF → LA</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                San Francisco, CA
+              </p>
+              <p class="group-card__desc">Four days, one van, three drivers on rotation. Big Sur, Monterey and as many roadside diners as we can fit in.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#1f6fb2">TS</li><li style="--av:#c2521f">LN</li>
+                  <li style="--av:#2f7d6f">DW</li><li style="--av:#4b3a86">+1</li>
+                </ul>
+                <span>2 of 6 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$220</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="food" data-spots="5"
+              data-keywords="ramen crawl capitol hill seattle food dinner noodles restaurants">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #c2521f, #ff9f52)">
+              <span class="group-card__pill group-card__pill--category">Food &amp; drink</span>
+              <span class="group-card__pill group-card__pill--when">Sep 26</span>
+              <span aria-hidden="true">🍜</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Ramen crawl through Capitol Hill</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Seattle, WA
+              </p>
+              <p class="group-card__desc">Four bowls, four kitchens, one evening. Split plates, compare broth, argue about it afterwards.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#c2521f">HR</li><li style="--av:#d99a10">EM</li>
+                  <li style="--av:#1f6fb2">+3</li>
+                </ul>
+                <span>5 of 10 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$40</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card group-card--full" data-category="beach" data-spots="0"
+              data-keywords="snorkel beach bbq santa monica california swimming coast">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #1f6fb2, #5cc6f0)">
+              <span class="group-card__pill group-card__pill--category">Beach</span>
+              <span class="group-card__pill group-card__pill--when">Oct 18</span>
+              <span aria-hidden="true">🏝️</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Snorkel day &amp; sunset beach BBQ</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Santa Monica, CA
+              </p>
+              <p class="group-card__desc">Masks and fins provided. Grill fires up at six — bring something to throw on it.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#1f6fb2">NB</li><li style="--av:#2f7d6f">KO</li>
+                  <li style="--av:#4b3a86">SV</li><li style="--av:#d99a10">+9</li>
+                </ul>
+                <span>Full — 12 joined</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$55</strong>per person</span>
+                <button class="btn btn--quiet" type="button" data-waitlist>Join waitlist</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="culture" data-spots="6"
+              data-keywords="museum walking tour portland oregon old town culture galleries architecture">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #4b3a86, #8a74d6)">
+              <span class="group-card__pill group-card__pill--category">Culture</span>
+              <span class="group-card__pill group-card__pill--when">Nov 1–2</span>
+              <span aria-hidden="true">🏛️</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Museum hop &amp; old-town walking tour</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Portland, OR
+              </p>
+              <p class="group-card__desc">A local guide on Saturday, three galleries on Sunday, and a slow coffee between each one.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#4b3a86">RG</li><li style="--av:#c2521f">AL</li>
+                  <li style="--av:#2f7d6f">+1</li>
+                </ul>
+                <span>6 of 9 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$30</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="group-card" data-category="nightlife" data-spots="1"
+              data-keywords="live jazz night late supper chicago illinois music bar">
+            <div class="group-card__cover" style="--cover: linear-gradient(140deg, #3a2a5c, #7b5ac0)">
+              <span class="group-card__pill group-card__pill--category">Nightlife</span>
+              <span class="group-card__pill group-card__pill--when">Oct 9</span>
+              <span aria-hidden="true">🎷</span>
+            </div>
+            <div class="group-card__body">
+              <h3 class="group-card__title">Live jazz night &amp; late supper</h3>
+              <p class="group-card__place">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                Chicago, IL
+              </p>
+              <p class="group-card__desc">Two sets at a basement club in the Loop, then somewhere still serving food at midnight.</p>
+              <div class="group-card__meta">
+                <ul class="avatars" aria-hidden="true">
+                  <li style="--av:#3a2a5c">CF</li><li style="--av:#d99a10">MB</li>
+                  <li style="--av:#1f6fb2">JT</li><li style="--av:#c2521f">+3</li>
+                </ul>
+                <span>1 of 7 spots left</span>
+              </div>
+              <div class="group-card__foot">
+                <span class="group-card__price"><strong>$65</strong>per person</span>
+                <button class="btn btn--duck" type="button" data-join>Request to join</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <p class="groups__empty" id="group-empty" hidden>
+          No group trips match that yet — try a different filter, or
+          <strong>create one</strong> and let people come to you.
+        </p>
+      </section>
+
+    </main>
+    <footer class="site-footer" id="help">
+      <span class="site-footer__legal">© <span id="year">2026</span> TravelDuckling</span>
+      <a href="../index.html#privacy">Privacy</a>
+      <a href="../index.html#terms">Terms</a>
+      <a href="../index.html#contact">Contact</a>
+    </footer>
+  </div>
+<!-- Create-a-group dialog -->
+  <dialog class="dialog" id="create-dialog" aria-labelledby="create-title">
+    <div class="dialog__head">
+      <img src="../assets/images/logo-mark.png" alt="" width="371" height="325">
+      <div>
+        <h2 class="dialog__title" id="create-title">Create a trip</h2>
+        <p class="dialog__subtitle">Set the shape of it — travellers can request a spot.</p>
+      </div>
+      <button class="dialog__close" id="create-close" type="button">
+        <span class="visually-hidden">Close</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form class="dialog__form" id="create-form" novalidate>
+      <div class="form-field form-field--wide">
+        <label for="g-title">Trip or activity name</label>
+        <input id="g-title" name="title" type="text" placeholder="Sunrise hike &amp; overnight camp" autocomplete="off">
+      </div>
+
+      <div class="form-field">
+        <label for="g-place">Destination</label>
+        <input id="g-place" name="place" type="text" placeholder="Mount Rainier, WA" autocomplete="off">
+      </div>
+
+      <div class="form-field">
+        <label for="g-category">Category</label>
+        <select id="g-category" name="category">
+          <option value="hiking">Hiking</option>
+          <option value="roadtrip">Road trip</option>
+          <option value="food">Food &amp; drink</option>
+          <option value="culture">Culture</option>
+          <option value="beach">Beach</option>
+          <option value="nightlife">Nightlife</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="g-start">Starts</label>
+        <input id="g-start" name="start" type="date">
+      </div>
+
+      <div class="form-field">
+        <label for="g-end">Ends</label>
+        <input id="g-end" name="end" type="date">
+      </div>
+
+      <div class="form-field">
+        <label for="g-size">Group size</label>
+        <input id="g-size" name="size" type="number" min="2" max="40" value="8">
+      </div>
+
+      <div class="form-field">
+        <label for="g-cost">Cost per person (USD)</label>
+        <input id="g-cost" name="cost" type="number" min="0" step="5" value="0">
+      </div>
+
+      <div class="form-field form-field--wide">
+        <label for="g-desc">What's the plan?</label>
+        <textarea id="g-desc" name="desc" placeholder="Where you'll go, what's included, what people should bring."></textarea>
+      </div>
+
+      <div class="form-field form-field--wide">
+        <label id="g-visibility-label">Who can see it</label>
+        <div class="radio-row" role="radiogroup" aria-labelledby="g-visibility-label">
+          <label><input type="radio" name="visibility" value="public" checked> Public</label>
+          <label><input type="radio" name="visibility" value="invite"> Invite only</label>
+        </div>
+      </div>
+
+      <p class="dialog__error" id="create-error" role="alert"></p>
+
+      <div class="dialog__foot">
+        <button class="btn btn--quiet" type="button" id="create-cancel">Cancel</button>
+        <button class="btn btn--dark" type="submit">Create trip</button>
+      </div>
+    </form>
+  </dialog>
+
+  <img class="floating-duck" src="../assets/images/logo-mark.png" alt="" width="371" height="325" aria-hidden="true">
+  <script type="module" src="../assets/js/account-menu.js"></script>
+  <script src="../assets/js/group-trips.js"></script>
+</body>
+</html>
