@@ -1,0 +1,26 @@
+/* About page: shared brand tokens and navigation come from index.css. */
+.about { color:#edf2fa; padding-bottom:2rem; }
+.about-hero { max-width:900px; margin:4rem auto 5rem; text-align:center; }
+.about h1 { font-size:clamp(2.5rem,6vw,4.7rem); line-height:1.08; letter-spacing:-.045em; margin:1.2rem 0; }
+.about h1 span { color:var(--duck-500); }
+.about p { line-height:1.85; color:#d0d9e7; }
+.about .eyebrow { color:var(--duck-500); letter-spacing:.14em; text-transform:uppercase; font-size:.8rem; font-weight:750; }
+.about-hero>p:not(.eyebrow) { max-width:740px; margin:1rem auto; }
+.about .about-lede { font-size:clamp(1.15rem,3vw,1.5rem); color:#fff; }
+.about-pillars { display:flex; gap:.7rem; justify-content:center; flex-wrap:wrap; margin-top:2rem; }
+.about-pillars a { color:#edf2fa; text-decoration:none; border:1px solid #526075; border-radius:999px; padding:.65rem 1rem; font-size:.9rem; background:#18243a; }
+.mission-section { scroll-margin-top:2rem; margin:0 auto 4rem; border:1px solid #3a4659; border-radius:24px; overflow:hidden; background:rgba(16,26,45,.96); }
+.mission-copy { max-width:850px; padding:clamp(1.5rem,5vw,3.5rem); margin:auto; }
+.about h2 { font-size:clamp(1.8rem,4vw,2.8rem); line-height:1.2; letter-spacing:-.035em; margin:.7rem 0 1.5rem; color:#fff; }
+.mission-copy>p { font-size:1.06rem; }
+.mission-copy .source-note { font-size:.85rem; margin-top:1.75rem; }
+.about a:not(.btn) { text-underline-offset:4px; }
+.source-note a { color:#ffe28c; }
+.mission-section figure { margin:0; background:#16253a; }
+.mission-section figure img { width:100%; height:auto; }
+.mission-section figcaption { text-align:center; font-size:.88rem; color:#cbd5e1; padding:1rem 1.5rem 1.25rem; }
+.about-invitation { text-align:center; max-width:790px; margin:5rem auto 2rem; }
+.about-invitation>img { margin:auto; object-fit:contain; }
+.about-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:1.5rem; margin-top:2rem; }
+.about-secondary { color:#ffe28c; }
+@media(max-width:600px) { .about-hero { margin:2rem auto 3rem; } .mission-section { margin-bottom:2rem; } .mission-copy>p { font-size:1rem; } .about-pillars { gap:.5rem; } }
