@@ -475,7 +475,8 @@
   .address-suggestion:hover, .address-suggestion:focus-visible { background: #f0f4fa; outline: none; }
   .address-attribution { padding: 0.45rem 0.75rem 0.3rem; text-align: right; }
   .address-attribution img { display: inline-block; width: 120px; height: auto; vertical-align: middle; }
-  .address-selected-attribution { display: block; margin-top: 0.2rem; line-height: 0; }
+  .address-selected-attribution { display: block; margin-top: 0.2rem; line-height: 16px; }
+  .maps-credit { font-family: Arial, sans-serif; font-size: 12px; font-weight: 400; font-style: normal; letter-spacing: normal; color: #5e5e5e; white-space: nowrap; }
   .address-selected-attribution[hidden] { display: none; }
   .address-selected-attribution img { width: 96px; height: auto; vertical-align: middle; }
   .address-status { display: block; color: #64748b; font-size: 0.72rem; }
