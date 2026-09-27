@@ -6,18 +6,15 @@
   <meta name="theme-color" content="#101a30">
   <title>My TravelDuckling — TravelDuckling</title>
   <link rel="icon" href="../assets/images/logo-mark.png">
-  <link rel="stylesheet" href="../assets/css/my-trips.css">
+  <link rel="stylesheet" href="../assets/css/my-trips.css?v=20260926-dashboard">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar__inner">
       <a class="brand" href="../index.html"><img src="../assets/images/logo-mark.png" alt=""><span>Travel<span>Duckling</span></span></a>
       <nav class="nav" aria-label="Account navigation">
-        <a href="journeys.html">Journeys & invitations</a>
-        <a href="../index.html">Find a ride</a>
+        <a href="../index.html">Explore rides</a>
         <button id="sign-out" type="button">Sign out</button>
-        <a class="nav-link" href="#my-rides" data-account-tab="my-rides" aria-current="page">My rides</a>
-        <a class="nav-link" href="#my-group-trips" data-account-tab="my-group-trips">My group trips</a>
       </nav>
     </div>
   </header>
@@ -26,12 +23,11 @@
     <div class="hero__inner">
       <div class="eyebrow">Your TravelDuckling</div>
       <h1>My TravelDuckling</h1>
-      <p>Keep an eye on the rides you’re driving, the seats you’ve requested, and what’s coming up next.</p>
+      <p>Manage your rides and group trips in one place.</p>
     </div>
   </section>
 
   <main>
-    <section class="profile-card"><div><h2>One way or there and back</h2><p>Publish a travel plan, find compatible people, and manage your new journey bookings.</p><a href="journeys.html">Open journeys & invitations →</a></div></section>
     <section class="profile-card" id="profile" aria-labelledby="profile-heading">
       <div class="avatar" id="profile-avatar" aria-hidden="true">T</div>
       <div class="profile-summary">
@@ -48,9 +44,14 @@
       </div>
     </section>
 
-    <section class="trip-panel" id="my-rides" aria-labelledby="trips-heading">
+    <section class="trip-panel" aria-label="Your travel">
+      <div class="account-tabs" role="tablist" aria-label="Your travel">
+        <button type="button" id="rides-tab" role="tab" data-account-tab="my-rides" aria-controls="my-rides" aria-selected="true">My rides</button>
+        <button type="button" id="groups-tab" role="tab" data-account-tab="my-group-trips" aria-controls="my-group-trips" aria-selected="false" tabindex="-1">My group trips</button>
+      </div>
+    <section class="account-section" id="my-rides" role="tabpanel" aria-labelledby="rides-tab">
       <div class="panel-head">
-        <div><h2 id="trips-heading">Your trips</h2><p>As a driver or a rider.</p></div>
+        <div><h2 id="trips-heading">My rides</h2><p>As a driver or a rider.</p></div>
         <a class="button button--gold" href="journeys.html">＋ Offer a ride</a>
       </div>
       <div class="filters" role="group" aria-label="Filter trips">
@@ -64,17 +65,18 @@
       <div class="trip-list" id="trip-list" aria-live="polite"></div>
     </section>
 
-    <section class="trip-panel account-section" id="my-group-trips" aria-labelledby="group-trips-heading" hidden>
+    <section class="account-section" id="my-group-trips" role="tabpanel" aria-labelledby="groups-tab" hidden>
       <div class="panel-head">
         <div><h2 id="group-trips-heading">My group trips</h2><p>Group trips you created or joined.</p></div>
         <a class="button button--gold" href="group-trips.html">＋ Find or create a group trip</a>
       </div>
       <div class="trip-list" id="group-trip-list" aria-live="polite"></div>
     </section>
+    </section>
   </main>
 
   <footer class="footer">TravelDuckling · A better way to share the journey.</footer>
 
-  <script type="module" src="../assets/js/my-trips.js?v=20260926-account-tabs"></script>
+  <script type="module" src="../assets/js/my-trips.js?v=20260926-dashboard"></script>
 </body>
 </html>

@@ -201,11 +201,30 @@ import { groupApi } from "./groups/api.js";
       const requested = location.hash === "#my-group-trips" ? "my-group-trips" : "my-rides";
       document.querySelectorAll("[data-account-tab]").forEach((tab) => {
         const active = tab.dataset.accountTab === requested;
-        tab.setAttribute("aria-current", active ? "page" : "false");
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
       });
       document.querySelectorAll(".account-section").forEach((section) => { section.hidden = section.id !== requested; });
       if (requested === "my-group-trips" && currentUser) loadGroupTrips();
     }
+    const accountTabs = [...document.querySelectorAll("[data-account-tab]")];
+    accountTabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        history.replaceState(null, "", "#" + tab.dataset.accountTab);
+        selectAccountSection();
+      });
+      tab.addEventListener("keydown", (event) => {
+        let next;
+        if (event.key === "ArrowRight") next = (index + 1) % accountTabs.length;
+        else if (event.key === "ArrowLeft") next = (index + accountTabs.length - 1) % accountTabs.length;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = accountTabs.length - 1;
+        else return;
+        event.preventDefault();
+        accountTabs[next].focus();
+        accountTabs[next].click();
+      });
+    });
     window.addEventListener("hashchange", selectAccountSection);
     selectAccountSection();
 
